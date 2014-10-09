@@ -8,6 +8,75 @@ var elGenie = (function() {
     },
     pointIntersects: function(p, r) {
       return !(p.x > (r.x + r.width) || p.x < r.x || p.y > (r.y + r.height) || p.y < r.y);
+    },
+    rectOfPolygon: function(vertices) {
+      for (var i = 0; i < vertices.length; i+=2) {
+        var r = {x1:0,y1:0,x2:0,y2:0};
+
+        var x = vertices[i];
+        var y = vertices[i+1];
+
+        if (x < r.x1)
+          r.x1 = x;
+        if (x > r.x2)
+          r.x2 = x;
+        if (y < r.y1)
+          r.y1 = y;
+        if (y > r.y2)
+          r.y2 = y;
+      }
+
+      return {x: r.x1, y: r.y1, w: r.x2 - r.x1, h: r.y2 - r.y1};
+    },
+    drawPolygon: function(graphics, vertices) {
+      if (vertices.length < 2)
+        return;
+      var g = graphics;
+
+      var counter = 0;
+      g.moveTo(vertices[counter++], vertices[counter++]);
+
+      while (counter < vertices.length - 1) {
+        g.lineTo(vertices[counter++], vertices[counter++]);
+      }
+
+      g.endFill();
+    },
+    resizePolygon: function(vertices, origin, scale) {
+      if (!origin) {
+        var origin = {x: 0.5, y: 0.5};
+
+        // calculate encircling rectangle of polygon.
+        var or = utils.rectOfPolygon(vertices);
+      }
+
+      // normalized vertices
+      var nv = [];
+      for (var i = 0; i < vertices.length; i+=2) {
+        var u = vertices[i];
+        var v = vertices[i+1];
+
+        nv.push(u * scale || 1);
+        nv.push(v * scale || 1);
+      }
+
+      var ur = utils.rectOfPolygon(nv);
+
+      console.log(or);
+      console.log(ur);
+
+      var o1 = { x: or.w * origin.x, y: or.h * origin.y };
+      var o2 = { x: ur.w * origin.x, y: ur.h * origin.y };
+
+      var delta = {x: o1.x - o2.x, y: o1.y - o2.y};
+
+      // readjust the new polygon position with delta
+      for (var i = 0; i < nv.length; i+=2) {
+        nv[i] += delta.x;
+        nv[i+1] += delta.y;
+      }
+
+      return nv;
     }
   }
 
@@ -55,8 +124,14 @@ var elGenie = (function() {
                     1020,280, 777,515, 870,630,
                     270,625, 403,540];
 
-    sprGenie.hitArea = new PIXI.Polygon( vertices );
+    // draw the shape to the canvas for testing
+    var g = new PIXI.Graphics();
+    g.beginFill(0x00FF00);
+    utils.drawPolygon(g, utils.resizePolygon(vertices, null, .5) );
+    stage.addChild(g);
 
+
+    sprGenie.hitArea = new PIXI.Polygon( utils.resizePolygon(vertices, null, .5) );
     sprGenie.tint = 0xDDCC22;
 
     // setup the genie sprite
@@ -85,25 +160,30 @@ var elGenie = (function() {
       this.startPosition = null;
     }
 
+    sprGenie.click = function(data) {
+      var p = data.getLocalPosition(this.parent);
+      console.log("Cick! [" + p.x + ", " + p.y + "]");
+    }
+
     sprGenie.mousemove = sprGenie.touchmove = function(data) {
       var currentPosition = data.getLocalPosition(this.parent);
+      console.log(this.startPosition);
 
       if (this.startPosition) {
-        var currentPosition = data.getLocalPosition(this.parent);
 
         // calculate distance
         var d = utils.distance(currentPosition, this.startPosition);
 
         // third of genie width
-        if (d > sprGenie.width / 10) {
+        if (d > (sprGenie.width / 2)) {
           // simulate a rub!
           this.rub();
-          if (utils.pointIntersects(currentPosition, this.hitArea)) {
+          if (this.hitArea.contains(currentPosition)) {
             this.startPosition = currentPosition;
           }
         }
       } else {
-        if (utils.pointIntersects(currentPosition, this.hitArea)) {
+        if (this.hitArea.contains(currentPosition)) {
           this.startPosition = currentPosition;
         }
       }
