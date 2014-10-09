@@ -150,6 +150,9 @@ var elGenie = (function() {
       this.rubCycle = ticks;
       this.isRubbing = true;
       this.wobbleFactor += sprGenie.defaultWobbleFactor;
+
+      if (this.wobbleFactor > .1)
+        this.wobbleFactor += sprGenie.defaultWobbleFactor;
     }
 
     sprGenie.tick = function() {
@@ -157,12 +160,13 @@ var elGenie = (function() {
         if (ticks > this.rubStart + 400) {
           this.isRubbing = false;
           this.wobbleFactor = sprGenie.defaultWobbleFactor;
+          this.rotation = 0;
           return;
         }
-        if (ticks > this.rubCycle + 50) {
+        if (ticks > this.rubCycle + 30) {
           this.rubCycle = ticks;
           this.wobbleFactor /= 2;
-          if (this.wobbleFactor < 0.005)
+          if (this.wobbleFactor < 0.0025)
             this.wobbleFactor = 0;
         }
 
