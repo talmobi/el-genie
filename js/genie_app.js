@@ -156,7 +156,7 @@ var elGenie = (function() {
     }
 
     sprGenie.tick = function() {
-      if (this.isRubbing) {
+      if (this.isRubbing || true) {
         if (ticks > this.rubStart + 400) {
           this.isRubbing = false;
           this.wobbleFactor = sprGenie.defaultWobbleFactor;
@@ -170,7 +170,7 @@ var elGenie = (function() {
             this.wobbleFactor = 0;
         }
 
-        this.rotation = Math.sin(ticks / 2) * this.wobbleFactor;
+        this.rotation = Math.sin(ticks / 2) * 0.02;
       }
     }
 
