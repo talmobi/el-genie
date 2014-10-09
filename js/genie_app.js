@@ -1,5 +1,8 @@
 var elGenie = (function() {
 
+  /**
+    * Utility methods
+    */
   var utils = {
     distance: function(point1, point2) {
       var x = point2.x - point1.x;
@@ -82,6 +85,11 @@ var elGenie = (function() {
       }
 
       return nv;
+    },
+    randomFlip: function(val) {
+      val = Math.abs(val);
+      var n = Math.random(val * 2) - val;
+      return n;
     }
   }
 
@@ -94,6 +102,9 @@ var elGenie = (function() {
 
   // initialize the app and the canvas
   function init(canvasId) {
+    /**
+      * Initialize the canvas and renderview
+      */
     if (!canvasId && !document.getElementById(defaultCanvasId)) {
       canvas = document.createElement('canvas');
       canvas.id = defaultCanvasId;
@@ -114,11 +125,14 @@ var elGenie = (function() {
         //renderer = new PIXI.WebGLRenderer(width, height, canvas, true);
         renderer = PIXI.autoDetectRenderer(width, height, canvas, true);
 
+    // position the app
     renderer.view.style.position = "absolute";
     renderer.view.style.top = "0px";
     renderer.view.style.left = "0px";
 
-
+    /**
+      * Setup the genie lamp
+      */
     // load textures
     var texture = PIXI.Texture.fromImage("genie_lamp.png");
     // create sprite from it
@@ -138,25 +152,25 @@ var elGenie = (function() {
     sprGenie.buttonMode = true;
 
     // define the magnitude of the wobble effect
-    sprGenie.defaultWobbleFactor = .005;
+    sprGenie.defaultWobbleFactor = .007;
     sprGenie.wobbleFactor = .005;
 
     // create rubbing function for genie
     sprGenie.rub = function() {
-      console.log("Rub rub!");
+      //console.log("Rub rub!");
 
       this.rubStart = ticks;
       this.rubCycle = ticks;
       this.isRubbing = true;
       this.wobbleFactor += sprGenie.defaultWobbleFactor;
 
-      if (this.wobbleFactor > .1)
-        this.wobbleFactor += sprGenie.defaultWobbleFactor;
+      //if (this.wobbleFactor > .1)
+      //  this.wobbleFactor += sprGenie.defaultWobbleFactor;
     }
 
     sprGenie.tick = function() {
       if (this.isRubbing) {
-        if (ticks > this.rubStart + 400) {
+        if (ticks > this.rubStart + 300) {
           this.isRubbing = false;
           this.wobbleFactor = sprGenie.defaultWobbleFactor;
           this.rotation = 0;
@@ -164,12 +178,12 @@ var elGenie = (function() {
         }
         if (ticks > this.rubCycle + 30) {
           this.rubCycle = ticks;
-          this.wobbleFactor /= 2;
+          this.wobbleFactor -= sprGenie.defaultWobbleFactor * 2;
           if (this.wobbleFactor < sprGenie.defaultWobbleFactor)
             this.wobbleFactor = 0;
         }
 
-        this.rotation = Math.sin(ticks) * this.wobbleFactor;
+        this.rotation = Math.sin(ticks / 2) * this.wobbleFactor;
       }
     }
 
@@ -205,8 +219,25 @@ var elGenie = (function() {
     stage.addChild(g);
     */
 
+    // variables to limit particle spawn rate
+    var particleLimit = 3;
+    var particleCounter = 0;
+
     sprGenie.mousemove = sprGenie.touchmove = function(data) {
       var currentPosition = data.getLocalPosition(this.parent);
+
+
+      particleCounter++;
+      if (particleCounter > particleLimit) {
+        particleCounter = 0;
+
+        // spawn particles
+        for (var i = 0; i < 2; i++) {
+          var p = new Particle(currentPosition.x + i * 5, currentPosition.y);
+          sparkles.push(p);
+          sparkleContainer.addChild(p);
+        }
+      }
 
       if (this.startPosition) {
 
@@ -214,15 +245,13 @@ var elGenie = (function() {
         var d = utils.distance(currentPosition, this.startPosition);
 
         // third of genie width
-        if (d > (sprGenie.width / 4)) {
+        if (d > (sprGenie.width / 3)) {
           // simulate a rub!
           this.rub();
           this.startPosition = null;
         }
       } else {
         if ( utils.pointIntersects(currentPosition, this)) {
-          console.log("x: " + this.x + ", w: " + this.width + ", y: " + this.y + ", h: " + this.height);
-          console.log(this.anchor);
           this.startPosition = currentPosition;
         }
       }
@@ -231,25 +260,113 @@ var elGenie = (function() {
     // add to stage
     stage.addChild(sprGenie);
 
+
+    /**
+      * Configure the mouse trailng sparkles.
+      */
+    var sparkleContainer = new PIXI.SpriteBatch();
+    stage.addChild(sparkleContainer);
+
+    // load the sprite sheet
+    var sparkleSheet = PIXI.Texture.fromImage("sparkle.png");
+
+    // slice the sheet into subimages for the animation
+    var texSparkles = [];
+    var w = 32, h = 32; 
+    for (var i = 0; i < 8; i++) {
+      for (var j = 0; j < 4; j++) {
+        texSparkles.push( new PIXI.Texture( sparkleSheet,
+                          new PIXI.Rectangle( i * w, j * h, w, h ) ) );
+      }
+    }
+
+
+
+    var sparkles = [];
+
+    // sparkle
+    function Particle(x, y) {
+      var p = new PIXI.Sprite( texSparkles[0] );
+      p.interactive = p.buttonMode = false;
+      p.position.x = x;
+      p.position.y = y;
+      p.ticks = 0;
+      p.limit = 2 + Math.random() * 3 - 1 | 0;
+      p.subImg = 0;
+      p.removed = false;
+      p.g = .02 * Math.random(); // gravity
+      p.v = {
+        x: utils.randomFlip(.5),
+        y: 0
+      } // velocity
+
+      p.tick = function() {
+        this.ticks++;
+        if (this.ticks > this.limit) {
+          this.ticks = 0;
+          this.texture = (texSparkles[this.subImg++ % texSparkles.length]);
+        }
+        // update the particle
+        this.rotation += 0.001;
+
+        if (this.subImg >= texSparkles.length) {
+          this.kill();
+        }
+
+        this.v.y += this.g;
+        this.x += this.v.x;
+        this.y += this.v.y;
+      }
+
+      // destroy the particle and free memory
+      p.kill = function() {
+        this.removed = true;
+      }
+
+      return p;
+    }
+
+
+    /**
+      * Start app
+      */
     var ticks = 0;
 
     setInterval(function() {
       ticks++;
-    }, 25);
+    }, 20);
 
     requestAnimFrame( animate );
     function animate() {
+      requestAnimFrame( animate );
+
       //ticks++;
 
       sprGenie.tick();
-      requestAnimFrame( animate );
 
+      // update particles
+      var buf = [];
+      for (var i = 0; i < sparkles.length; i++) {
+        var p = sparkles[i];
+
+        if (!p.removed) {
+          p.tick();
+          buf.push(p);
+        } else {
+          sparkleContainer.removeChild(p);
+        }
+      }
+      sparkles = buf;
+      
       // render stage
       renderer.render(stage);
     }
 
   }
 
+  /**
+    * Public methods.
+    */
   return {
     init: function(canvasId) {
       init(canvasId);
