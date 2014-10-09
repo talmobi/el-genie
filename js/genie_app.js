@@ -224,6 +224,8 @@ var elGenie = (function() {
     var particleCounter = 0;
 
     sprGenie.mousemove = sprGenie.touchmove = function(data) {
+      data.originalEvent.preventDefault();
+
       var currentPosition = data.getLocalPosition(this.parent);
 
 
