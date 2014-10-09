@@ -7,7 +7,12 @@ var elGenie = (function() {
       return Math.sqrt( x*x + y*y );
     },
     pointIntersects: function(p, r) {
-      return !(p.x > (r.x + r.width) || p.x < r.x || p.y > (r.y + r.height) || p.y < r.y);
+      var x = r.x - r.width * r.anchor.x || 0;
+      var y = r.y - r.height * r.anchor.y || 0;
+      var w = r.width;
+      var h = r.height;
+
+      return !(p.x > (x + w) || p.x < x || p.y > (y + h) || p.y < y);
     },
     rectOfPolygon: function(vertices) {
       for (var i = 0; i < vertices.length; i+=2) {
@@ -119,26 +124,20 @@ var elGenie = (function() {
     // create sprite from it
     var sprGenie = new PIXI.Sprite(texture);
 
+    // defines a polygon shape around the lamp (for more accurate collision detection)
     var vertices = [0,300, 135,235, 488,290,
                     620,60, 880,0, 1020,190,
                     1020,280, 777,515, 870,630,
                     270,625, 403,540];
 
-    // draw the shape to the canvas for testing
-    /*
-    var g = new PIXI.Graphics();
-    g.beginFill(0x00FF00);
-    utils.drawPolygon(g, utils.resizePolygon(vertices, null, .5) );
-    stage.addChild(g);
-    sprGenie.hitArea = new PIXI.Polygon( utils.resizePolygon(vertices, null, .5) );
-    */
-
+    // tint the sprite in a color (hex RRGGBB)
     sprGenie.tint = 0xDDCC22;
 
-    // setup the genie sprite
+    // make sprite clickable
     sprGenie.interactive = true;
     sprGenie.buttonMode = true;
 
+    // define the magnitude of the wobble effect
     sprGenie.defaultWobbleFactor = .005;
     sprGenie.wobbleFactor = .005;
 
@@ -175,8 +174,8 @@ var elGenie = (function() {
     }
 
     // center at the genie lamps foot
-    sprGenie.anchor.x = 0.5; // 0.6
-    sprGenie.anchor.y = 0.5; // 0.8
+    sprGenie.anchor.x = .5; // 0.6
+    sprGenie.anchor.y = .5; // 0.8
 
     // set sprGenie at center of screen
     sprGenie.position.x = width / 2 | 0;
@@ -185,7 +184,7 @@ var elGenie = (function() {
     // shrink the lamp a bit
     sprGenie.scale.x = sprGenie.scale.y = .5;
 
-    // setip genie touch events
+    // setup genie touch events
     var _s = sprGenie;
     _s.mouseup = _s.mouseupoutside = _s.touchend = _s.touchendoutside = function(data) {
       this.startPosition = null;
@@ -195,6 +194,16 @@ var elGenie = (function() {
       var p = data.getLocalPosition(this.parent);
       this.rub();
     }
+
+    /*
+    // draw hitbox for testing
+    var g = new PIXI.Graphics();
+    g.beginFill(0x00FF00);
+    g.drawRect(sprGenie.x - sprGenie.width * sprGenie.anchor.x,
+               sprGenie.y - sprGenie.height * sprGenie.anchor.y, sprGenie.width, sprGenie.height);
+    g.endFill();
+    stage.addChild(g);
+    */
 
     sprGenie.mousemove = sprGenie.touchmove = function(data) {
       var currentPosition = data.getLocalPosition(this.parent);
@@ -212,6 +221,8 @@ var elGenie = (function() {
         }
       } else {
         if ( utils.pointIntersects(currentPosition, this)) {
+          console.log("x: " + this.x + ", w: " + this.width + ", y: " + this.y + ", h: " + this.height);
+          console.log(this.anchor);
           this.startPosition = currentPosition;
         }
       }
@@ -231,7 +242,6 @@ var elGenie = (function() {
       //ticks++;
 
       sprGenie.tick();
-
       requestAnimFrame( animate );
 
       // render stage
