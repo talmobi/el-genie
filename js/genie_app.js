@@ -139,7 +139,7 @@ var elGenie = (function() {
     sprGenie.interactive = true;
     sprGenie.buttonMode = true;
 
-    sprGenie.defaultWobbleFactor = .005 * 2;
+    sprGenie.defaultWobbleFactor = .005;
     sprGenie.wobbleFactor = .005;
 
     // create rubbing function for genie
