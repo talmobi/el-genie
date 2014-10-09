@@ -170,7 +170,7 @@ var elGenie = (function() {
             this.wobbleFactor = 0;
         }
 
-        this.rotation = Math.sin(ticks / 2) * 0.02;
+        this.rotation = Math.sin(ticks) * .04;
       }
     }
 
@@ -222,9 +222,13 @@ var elGenie = (function() {
 
     var ticks = 0;
 
+    setInterval(function() {
+      ticks++;
+    }, 25);
+
     requestAnimFrame( animate );
     function animate() {
-      ticks++;
+      //ticks++;
 
       sprGenie.tick();
 
