@@ -193,6 +193,7 @@ var elGenie = (function() {
 
     sprGenie.click = function(data) {
       var p = data.getLocalPosition(this.parent);
+      this.rub();
     }
 
     sprGenie.mousemove = sprGenie.touchmove = function(data) {
