@@ -223,10 +223,10 @@ var elGenie = (function() {
     var particleLimit = 3;
     var particleCounter = 0;
 
-    sprGenie.mousemove = sprGenie.touchmove = function(data) {
+    stage.mousemove = stage.touchmove = function(data) {
       data.originalEvent.preventDefault();
 
-      var currentPosition = data.getLocalPosition(this.parent);
+      var currentPosition = data.getLocalPosition(sprGenie.parent);
 
 
       particleCounter++;
@@ -241,20 +241,20 @@ var elGenie = (function() {
         }
       }
 
-      if (this.startPosition) {
+      if (sprGenie.startPosition) {
 
         // calculate distance
-        var d = utils.distance(currentPosition, this.startPosition);
+        var d = utils.distance(currentPosition, sprGenie.startPosition);
 
         // third of genie width
         if (d > (sprGenie.width / 3)) {
           // simulate a rub!
-          this.rub();
-          this.startPosition = null;
+          sprGenie.rub();
+          sprGenie.startPosition = null;
         }
       } else {
-        if ( utils.pointIntersects(currentPosition, this)) {
-          this.startPosition = currentPosition;
+        if ( utils.pointIntersects(currentPosition, sprGenie)) {
+          sprGenie.startPosition = currentPosition;
         }
       }
     }
