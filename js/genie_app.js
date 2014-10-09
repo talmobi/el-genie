@@ -139,9 +139,35 @@ var elGenie = (function() {
     sprGenie.interactive = true;
     sprGenie.buttonMode = true;
 
+    sprGenie.defaultWobbleFactor = .005;
+    sprGenie.wobbleFactor = .005;
+
     // create rubbing function for genie
     sprGenie.rub = function() {
       console.log("Rub rub!");
+
+      this.rubStart = ticks;
+      this.rubCycle = ticks;
+      this.isRubbing = true;
+      this.wobbleFactor += sprGenie.defaultWobbleFactor;
+    }
+
+    sprGenie.tick = function() {
+      if (this.isRubbing) {
+        if (ticks > this.rubStart + 400) {
+          this.isRubbing = false;
+          this.wobbleFactor = sprGenie.defaultWobbleFactor;
+          return;
+        }
+        if (ticks > this.rubCycle + 50) {
+          this.rubCycle = ticks;
+          this.wobbleFactor /= 2;
+          if (this.wobbleFactor < 0.005)
+            this.wobbleFactor = 0;
+        }
+
+        this.rotation = Math.sin(ticks / 2) * this.wobbleFactor;
+      }
     }
 
     // center at the genie lamps foot
@@ -174,7 +200,7 @@ var elGenie = (function() {
         var d = utils.distance(currentPosition, this.startPosition);
 
         // third of genie width
-        if (d > (sprGenie.width / 2)) {
+        if (d > (sprGenie.width / 4)) {
           // simulate a rub!
           this.rub();
           this.startPosition = null;
@@ -189,9 +215,14 @@ var elGenie = (function() {
     // add to stage
     stage.addChild(sprGenie);
 
+    var ticks = 0;
 
     requestAnimFrame( animate );
     function animate() {
+      ticks++;
+
+      sprGenie.tick();
+
       requestAnimFrame( animate );
 
       // render stage
