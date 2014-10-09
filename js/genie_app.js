@@ -139,7 +139,7 @@ var elGenie = (function() {
     sprGenie.interactive = true;
     sprGenie.buttonMode = true;
 
-    sprGenie.defaultWobbleFactor = .005;
+    sprGenie.defaultWobbleFactor = .005 * 2;
     sprGenie.wobbleFactor = .005;
 
     // create rubbing function for genie
@@ -156,7 +156,7 @@ var elGenie = (function() {
     }
 
     sprGenie.tick = function() {
-      if (this.isRubbing || true) {
+      if (this.isRubbing) {
         if (ticks > this.rubStart + 400) {
           this.isRubbing = false;
           this.wobbleFactor = sprGenie.defaultWobbleFactor;
@@ -166,11 +166,11 @@ var elGenie = (function() {
         if (ticks > this.rubCycle + 30) {
           this.rubCycle = ticks;
           this.wobbleFactor /= 2;
-          if (this.wobbleFactor < 0.0025)
+          if (this.wobbleFactor < sprGenie.defaultWobbleFactor)
             this.wobbleFactor = 0;
         }
 
-        this.rotation = Math.sin(ticks) * .04;
+        this.rotation = Math.sin(ticks) * this.wobbleFactor;
       }
     }
 
