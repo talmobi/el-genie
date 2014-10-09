@@ -1,6 +1,19 @@
 var elGenie = (function() {
 
   /**
+    * Info.js (based on stats.js)
+    */
+  var info = new Info();
+  info.setMode(0); // 0: info box 1, 1: info box 2
+
+  // Align top-left
+  info.domElement.style.position = 'absolute';
+  info.domElement.style.left = '0px';
+  info.domElement.style.top = '0px';
+
+  document.body.appendChild( info.domElement );
+
+  /**
     * Utility methods
     */
   var utils = {
@@ -143,6 +156,7 @@ var elGenie = (function() {
                     620,60, 880,0, 1020,190,
                     1020,280, 777,515, 870,630,
                     270,625, 403,540];
+    var scaledVertices = utils.resizePolygon(vertices, null, .5)
 
     // tint the sprite in a color (hex RRGGBB)
     sprGenie.tint = 0xDDCC22;
@@ -176,6 +190,20 @@ var elGenie = (function() {
           this.rotation = 0;
           return;
         }
+
+        var vertices = scaledVertices;
+        var xoff = 200;
+        var yoff = -80;
+        var sg = sprGenie;
+        if (this.wobbleFactor > 0.1) {
+          spawnLampParticle(sg.x - sg.width * 0.35, sg.y - sg.height * .15);
+          spawnLampParticle(sg.x + sg.width * 0.10, sg.y + sg.height * .1);
+        }
+        if (this.wobbleFactor > 0.2) {
+          spawnLampParticle(sg.x + sg.width * 0.05, sg.y - sg.height * .3);
+          spawnLampParticle(sg.x - sg.width * 0.2, sg.y + sg.height * .05);
+        }
+
         if (ticks > this.rubCycle + 30) {
           this.rubCycle = ticks;
           this.wobbleFactor -= sprGenie.defaultWobbleFactor * 2;
@@ -228,7 +256,6 @@ var elGenie = (function() {
 
       var currentPosition = data.getLocalPosition(sprGenie.parent);
 
-
       particleCounter++;
       if (particleCounter > particleLimit) {
         particleCounter = 0;
@@ -247,7 +274,7 @@ var elGenie = (function() {
         var d = utils.distance(currentPosition, sprGenie.startPosition);
 
         // third of genie width
-        if (d > (sprGenie.width / 3)) {
+        if (d > (sprGenie.width / 4)) {
           // simulate a rub!
           sprGenie.rub();
           sprGenie.startPosition = null;
@@ -285,6 +312,24 @@ var elGenie = (function() {
 
 
     var sparkles = [];
+
+    function spawnParticle(x, y) {
+      var p = new Particle(x, y);
+      sparkles.push(p);
+      sparkleContainer.addChild(p);
+    }
+
+    // spawn particle relative to the wobbling genie lamp
+    function spawnLampParticle(x, y) {
+
+      var r = sprGenie.rotation; // rotation in radians.
+      var d = utils.distance({x: x, y: y}, sprGenie.position) // distance
+
+
+      var p = new Particle(nx, ny);
+      sparkles.push(p);
+      sparkleContainer.addChild(p);
+    }
 
     // sparkle
     function Particle(x, y) {
@@ -345,6 +390,9 @@ var elGenie = (function() {
       //ticks++;
 
       sprGenie.tick();
+
+      // DEBUG display genie lamps rotation radians
+      info.setInfo1("Rotation (Rad): " + sprGenie.rotation);
 
       // update particles
       var buf = [];
