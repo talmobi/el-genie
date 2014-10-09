@@ -125,13 +125,14 @@ var elGenie = (function() {
                     270,625, 403,540];
 
     // draw the shape to the canvas for testing
+    /*
     var g = new PIXI.Graphics();
     g.beginFill(0x00FF00);
     utils.drawPolygon(g, utils.resizePolygon(vertices, null, .5) );
     stage.addChild(g);
-
-
     sprGenie.hitArea = new PIXI.Polygon( utils.resizePolygon(vertices, null, .5) );
+    */
+
     sprGenie.tint = 0xDDCC22;
 
     // setup the genie sprite
@@ -162,12 +163,10 @@ var elGenie = (function() {
 
     sprGenie.click = function(data) {
       var p = data.getLocalPosition(this.parent);
-      console.log("Cick! [" + p.x + ", " + p.y + "]");
     }
 
     sprGenie.mousemove = sprGenie.touchmove = function(data) {
       var currentPosition = data.getLocalPosition(this.parent);
-      console.log(this.startPosition);
 
       if (this.startPosition) {
 
@@ -178,12 +177,10 @@ var elGenie = (function() {
         if (d > (sprGenie.width / 2)) {
           // simulate a rub!
           this.rub();
-          if (this.hitArea.contains(currentPosition)) {
-            this.startPosition = currentPosition;
-          }
+          this.startPosition = null;
         }
       } else {
-        if (this.hitArea.contains(currentPosition)) {
+        if ( utils.pointIntersects(currentPosition, this)) {
           this.startPosition = currentPosition;
         }
       }
