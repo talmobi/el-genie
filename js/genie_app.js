@@ -191,7 +191,7 @@ var elGenie = (function() {
       this.startPosition = null;
     }
 
-    sprGenie.click = function(data) {
+    sprGenie.mousedown = sprGenie.touchdown = function(data) {
       var p = data.getLocalPosition(this.parent);
       this.rub();
     }
