@@ -121,7 +121,7 @@ var elGenie = (function() {
 
   var canvas;
 
-  var width = ((window.innerWidth > WIDTH) ? window.innerWidth : WIDTH) || WIDTH;
+  var width = WIDTH || window.innerWidth;
   var height = HEIGHT || window.innerHeight;
 
   var defaultCanvasId = "elGenieCanvas";
@@ -545,8 +545,7 @@ var elGenie = (function() {
 
     // resize on window resize
     function resize() {
-      var width = ((window.innerWidth > WIDTH) ? window.innerWidth : WIDTH) || WIDTH;
-      width = WIDTH;
+      var width = WIDTH;
       var height = window.innerHeight;
 
       // position the app
