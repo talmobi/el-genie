@@ -182,24 +182,28 @@ var elGenie = (function() {
                     620,60, 880,0, 1020,190,
                     1020,280, 777,515, 870,630,
                     270,625, 403,540];
-    var scaledVertices = utils.resizePolygon(vertices, null, SCALE);
-    var polygonBox = utils.rectOfPolygon(scaledVertices);
 
-    var _g = new PIXI.Graphics();
-    _g.beginFill(0x00FF00);
-    //utils.movePolygon(scaledVertices, 115, -45);
+    var scaledVertices, polygonBox, scaledPolygon;
 
-    var xx = sprGenie.x - 1024 * SCALE * sprGenie.anchor.x;
-    var yy = sprGenie.y - 667 * SCALE * sprGenie.anchor.y;
-    //var xx = sprGenie.x - sprGenie.width * .93;
-    //var yy = sprGenie.y - sprGenie.height * .75;
-    utils.movePolygon(scaledVertices, xx, yy);
+    function initPolygon() {
+      scaledVertices = utils.resizePolygon(vertices, null, SCALE);
+      polygonBox = utils.rectOfPolygon(scaledVertices);
+
+      var xx = sprGenie.x - 1024 * SCALE * sprGenie.anchor.x;
+      var yy = sprGenie.y - 667 * SCALE * sprGenie.anchor.y;
+      //var xx = sprGenie.x - sprGenie.width * .93;
+      //var yy = sprGenie.y - sprGenie.height * .75;
+      utils.movePolygon(scaledVertices, xx, yy);
+      scaledPolygon = new PIXI.Polygon( scaledVertices );
+    }
+    initPolygon();
 
     if (DEBUG) {
+      var _g = new PIXI.Graphics();
+      _g.beginFill(0x00FF00);
       utils.drawPolygon(_g, scaledVertices);
       stage.addChild(_g);
     }
-    var scaledPolygon = new PIXI.Polygon( scaledVertices );
 
 
 
@@ -316,7 +320,8 @@ var elGenie = (function() {
       sprGenie.tint = (Math.random() * 0xFF0000) | 0xFF0000;
     }
 
-    stage.mousemove = stage.touchmove = sprGenie.touchmove = function(data) {
+    //stage.mousemove = stage.touchmove = sprGenie.touchmove = function(data) {
+    sprGenie.mousemove = sprGenie.touchmove = function(data) {
       data.originalEvent.preventDefault();
 
       sprGenie.tint = 0x0000FF;
@@ -531,6 +536,29 @@ var elGenie = (function() {
       // render stage
       renderer.render(stage);
     }
+
+    // resize on window resize
+    function resize() {
+      var width = window.innerWidth;
+      var height = window.innerHeight;
+
+      // set sprGenie at center of screen
+      sprGenie.position.x = width / 2 | 0;
+      sprGenie.position.y = height / 2 | 0;
+
+      initPolygon();
+
+      renderer.resize(width, height);
+
+      // remove all sparkles
+      for (var i = 0; i < sparkles.length; i++) {
+        var p = sparkles[i];
+
+        p.removed = true;
+      }
+    }
+
+    window.addEventListener("resize", resize, false);
 
   }
 
