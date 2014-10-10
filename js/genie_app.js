@@ -290,7 +290,7 @@ var elGenie = (function() {
     */
 
     // variables to limit particle spawn rate
-    var particleLimit = 18;
+    var particleLimit = 12;
     var particleCounter = 0;
 
     // DEBUG
@@ -337,7 +337,7 @@ var elGenie = (function() {
 
         // spawn particles
         if (mouseTrailToggle) {
-          for (var i = 0; i < 1; i++) {
+          for (var i = 0; i < 2; i++) {
             var p = new Particle(currentPosition.x + i * 5 - 16, currentPosition.y - 16);
             sparkles.push(p);
             sparkleContainer.addChild(p);
