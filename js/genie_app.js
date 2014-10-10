@@ -87,9 +87,6 @@ var elGenie = (function() {
 
       var ur = utils.rectOfPolygon(nv);
 
-      console.log(or);
-      console.log(ur);
-
       var o1 = { x: or.w * origin.x, y: or.h * origin.y };
       var o2 = { x: ur.w * origin.x, y: ur.h * origin.y };
 
@@ -388,8 +385,8 @@ var elGenie = (function() {
       switch (sparkleMode) {
         case 2:
           for (var i = 0; i < 100; i++) {
-            nx = Math.random() * width;
-            ny = Math.random() * height;
+            nx = sprGenie.x - sprGenie.width + Math.random() * sprGenie.width * 2;
+            ny = sprGenie.y - sprGenie.height + Math.random() * sprGenie.height * 2;
             if (scaledPolygon.contains(nx, ny))
               break;
           }
@@ -479,7 +476,7 @@ var elGenie = (function() {
       sprGenie.tick();
 
       // DEBUG display genie lamps rotation radians
-      info.setInfo1("Sparkle Mode: " + sparkleMode);
+      info.setInfo1("Sparkle Mode: " + sparkleMode + " / 2");
 
       // update particles
       var buf = [];
