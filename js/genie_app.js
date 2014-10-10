@@ -327,7 +327,7 @@ var elGenie = (function() {
     sprGenie.mousemove = sprGenie.touchmove = function(data) {
       data.originalEvent.preventDefault();
 
-      sprGenie.tint = 0x0000FF;
+      sprGenie.tint = 0x6565FF;
 
       var currentPosition = data.getLocalPosition(sprGenie.parent);
 
