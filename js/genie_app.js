@@ -17,6 +17,8 @@ var elGenie = (function() {
     * App configuration
     */
   var sparkleMode = 2;
+  var SCALE = .5;
+  var DEBUG = false;
 
   /**
     * Utility methods
@@ -70,7 +72,7 @@ var elGenie = (function() {
     },
     resizePolygon: function(vertices, origin, scale) {
       if (!origin) {
-        var origin = {x: 0.5, y: 0.5};
+        var origin = {x: 0, y: 0};
 
         // calculate encircling rectangle of polygon.
         var or = utils.rectOfPolygon(vertices);
@@ -165,19 +167,43 @@ var elGenie = (function() {
     // create sprite from it
     var sprGenie = new PIXI.Sprite(texture);
 
+    // center at the genie lamps foot
+    sprGenie.anchor.x = .5; // 0.6
+    sprGenie.anchor.y = .5; // 0.8
+
+    // set sprGenie at center of screen
+    sprGenie.position.x = width / 2 | 0;
+    sprGenie.position.y = height / 2 | 0;
+
+
+    // shrink the lamp a bit
+    sprGenie.scale.x = sprGenie.scale.y = SCALE;
+
+
+
     // defines a polygon shape around the lamp (for more accurate collision detection)
     var vertices = [0,300, 135,235, 488,290,
                     620,60, 880,0, 1020,190,
                     1020,280, 777,515, 870,630,
                     270,625, 403,540];
-    var scaledVertices = utils.resizePolygon(vertices, null, .5);
+    var scaledVertices = utils.resizePolygon(vertices, null, SCALE);
 
     var _g = new PIXI.Graphics();
     _g.beginFill(0x00FF00);
-    utils.movePolygon(scaledVertices, 115, -45);
-    //utils.drawPolygon(_g, scaledVertices);
+    //utils.movePolygon(scaledVertices, 115, -45);
+
+    var xx = sprGenie.x - sprGenie.width * .5;
+    var yy = sprGenie.y - sprGenie.height * .5;
+    //var xx = sprGenie.x - sprGenie.width * .93;
+    //var yy = sprGenie.y - sprGenie.height * .75;
+    utils.movePolygon(scaledVertices, xx, yy);
+
+
+    utils.drawPolygon(_g, scaledVertices);
     stage.addChild(_g);
     var scaledPolygon = new PIXI.Polygon( scaledVertices );
+
+
 
     // tint the sprite in a color (hex RRGGBB)
     sprGenie.tint = 0xDDCC22;
@@ -235,17 +261,6 @@ var elGenie = (function() {
         this.rotation = Math.sin(ticks / 2) * this.wobbleFactor;
       }
     }
-
-    // center at the genie lamps foot
-    sprGenie.anchor.x = .5; // 0.6
-    sprGenie.anchor.y = .5; // 0.8
-
-    // set sprGenie at center of screen
-    sprGenie.position.x = width / 2 | 0;
-    sprGenie.position.y = height / 2 | 0;
-
-    // shrink the lamp a bit
-    sprGenie.scale.x = sprGenie.scale.y = .5;
 
     // setup genie touch events
     var _s = sprGenie;
