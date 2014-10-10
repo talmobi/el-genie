@@ -17,7 +17,7 @@ var elGenie = (function() {
     * App configuration
     */
   var sparkleMode = 2;
-  var SCALE = .5;
+  var SCALE = .75;
   var DEBUG = false;
 
   /**
@@ -172,6 +172,7 @@ var elGenie = (function() {
     sprGenie.position.x = width / 2 | 0;
     sprGenie.position.y = height / 2 | 0;
 
+    SCALE = .5;
 
     // shrink the lamp a bit
     sprGenie.scale.x = sprGenie.scale.y = SCALE;
@@ -184,13 +185,14 @@ var elGenie = (function() {
                     1020,280, 777,515, 870,630,
                     270,625, 403,540];
     var scaledVertices = utils.resizePolygon(vertices, null, SCALE);
+    var polygonBox = utils.rectOfPolygon(scaledVertices);
 
     var _g = new PIXI.Graphics();
     _g.beginFill(0x00FF00);
     //utils.movePolygon(scaledVertices, 115, -45);
 
-    var xx = sprGenie.x - sprGenie.width * sprGenie.anchor.x;
-    var yy = sprGenie.y - sprGenie.height * sprGenie.anchor.y;
+    var xx = sprGenie.x - 1024 * SCALE * sprGenie.anchor.x;
+    var yy = sprGenie.y - 667 * SCALE * sprGenie.anchor.y;
     //var xx = sprGenie.x - sprGenie.width * .93;
     //var yy = sprGenie.y - sprGenie.height * .75;
     utils.movePolygon(scaledVertices, xx, yy);
