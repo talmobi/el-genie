@@ -132,7 +132,7 @@ var Info = function () {
 
 		appendInfo2: function(text) {
 			msText.textContent += text;
-		},
+		}
 
 	}
 

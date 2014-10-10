@@ -195,13 +195,13 @@ var elGenie = (function() {
         var xoff = 200;
         var yoff = -80;
         var sg = sprGenie;
-        if (this.wobbleFactor > 0.1) {
-          spawnLampParticle(sg.x - sg.width * 0.35, sg.y - sg.height * .15);
-          spawnLampParticle(sg.x + sg.width * 0.10, sg.y + sg.height * .1);
+        if (this.wobbleFactor > 0.001) {
+          spawnLampParticle(sg.x - sg.width * 0.35, sg.y - sg.height * 0.11);
+          //spawnLampParticle(sg.x + sg.width * 0.10, sg.y + sg.height * .1);
         }
         if (this.wobbleFactor > 0.2) {
-          spawnLampParticle(sg.x + sg.width * 0.05, sg.y - sg.height * .3);
-          spawnLampParticle(sg.x - sg.width * 0.2, sg.y + sg.height * .05);
+          //spawnLampParticle(sg.x + sg.width * 0.05, sg.y - sg.height * .3);
+          //spawnLampParticle(sg.x - sg.width * 0.2, sg.y + sg.height * .05);
         }
 
         if (ticks > this.rubCycle + 30) {
@@ -262,9 +262,10 @@ var elGenie = (function() {
 
         // spawn particles
         for (var i = 0; i < 2; i++) {
-          var p = new Particle(currentPosition.x + i * 5, currentPosition.y);
+          /*var p = new Particle(currentPosition.x + i * 5, currentPosition.y);
           sparkles.push(p);
           sparkleContainer.addChild(p);
+          */
         }
       }
 
@@ -322,11 +323,24 @@ var elGenie = (function() {
     // spawn particle relative to the wobbling genie lamp
     function spawnLampParticle(x, y) {
 
-      var r = sprGenie.rotation; // rotation in radians.
-      var d = utils.distance({x: x, y: y}, sprGenie.position) // distance
+      var d = utils.distance(sprGenie, {x: x, y: y}) // distance
+      var dx = x - sprGenie.x;
+      var dy = y - sprGenie.y;
+
+      var or = Math.atan(dy / dx);
+
+      var r = sprGenie.rotation + or; // rotation in radians.
+
+      var nx = sprGenie.x - d * Math.cos(r);
+      var ny = sprGenie.y - d * Math.sin(r);
+
+      info.setInfo2("x: " + x + ", y: " + y + "\nd: " + d + ", cos: " + Math.cos(r) * d + ", sin: " + Math.sin(r) * d);
+
 
 
       var p = new Particle(nx, ny);
+      p.limit = 1;
+      p.subImg = 30;
       sparkles.push(p);
       sparkleContainer.addChild(p);
     }
