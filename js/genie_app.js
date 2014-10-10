@@ -192,8 +192,8 @@ var elGenie = (function() {
     _g.beginFill(0x00FF00);
     //utils.movePolygon(scaledVertices, 115, -45);
 
-    var xx = sprGenie.x - sprGenie.width * .5;
-    var yy = sprGenie.y - sprGenie.height * .5;
+    var xx = sprGenie.x - sprGenie.width * sprGenie.anchor.x;
+    var yy = sprGenie.y - sprGenie.height * sprGenie.anchor.y;
     //var xx = sprGenie.x - sprGenie.width * .93;
     //var yy = sprGenie.y - sprGenie.height * .75;
     utils.movePolygon(scaledVertices, xx, yy);
