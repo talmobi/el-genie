@@ -16,7 +16,7 @@ var Info = function () {
 	var container = document.createElement( 'div' );
 	container.id = 'stats';
 	container.addEventListener( 'mousedown', function ( event ) { event.preventDefault(); setMode( ++ mode % 2 ) }, false );
-	container.style.cssText = 'width:200px;opacity:0.9;cursor:pointer';
+	container.style.cssText = 'width:240px;opacity:0.9;cursor:pointer';
 
 	var fpsDiv = document.createElement( 'div' );
 	fpsDiv.id = 'fps';
@@ -25,7 +25,7 @@ var Info = function () {
 
 	var fpsText = document.createElement( 'div' );
 	fpsText.id = 'fpsText';
-	fpsText.style.cssText = 'color:#0ff;font-family:Helvetica,Arial,sans-serif;font-size:9px;font-weight:bold;line-height:15px';
+	fpsText.style.cssText = 'color:#0ff;font-family:Helvetica,Arial,sans-serif;font-size:27px;font-weight:bold;line-height:40px';
 	fpsText.innerHTML = 'Info 1';
 	fpsDiv.appendChild( fpsText );
 
