@@ -269,6 +269,7 @@ var elGenie = (function() {
     }
 
     sprGenie.mousedown = sprGenie.touchdown = function(data) {
+      data.originalEvent.preventDefault();
       var p = data.getLocalPosition(this.parent);
       this.rub();
     }
@@ -297,16 +298,27 @@ var elGenie = (function() {
 
     // DEBUG
     // toggle mouse trailing effect
-    window.onkeyup = function(e) {
-      var key = e.keyCode ? e.keyCode : e.which;
+    if (true || DEBUG) {
+      window.onkeyup = function(e) {
+        var key = e.keyCode ? e.keyCode : e.which;
 
-      if (key == 32) { // space 
-        mouseTrailToggle = !mouseTrailToggle;
+        if (key == 32) { // space 
+          mouseTrailToggle = !mouseTrailToggle;
+        }
       }
+    }
+
+    // touch test DEBUG
+    sprGenie.mousedown = sprGenie.touchstart = function(data) {
+      data.originalEvent.preventDefault();
+
+      sprGenie.tint = Math.random() * 0xFFFF00;
     }
 
     stage.mousemove = stage.touchmove = sprGenie.touchmove = function(data) {
       data.originalEvent.preventDefault();
+
+      sprGenie.tint = 0x0000FF;
 
       var currentPosition = data.getLocalPosition(sprGenie.parent);
 
