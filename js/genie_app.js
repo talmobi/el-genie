@@ -14,6 +14,11 @@ var elGenie = (function() {
   document.body.appendChild( info.domElement );
 
   /**
+    * App configuration
+    */
+  var sparkleMode = 2;
+
+  /**
     * Utility methods
     */
   var utils = {
@@ -99,6 +104,15 @@ var elGenie = (function() {
 
       return nv;
     },
+    movePolygon: function(vertices, x, y) {
+      if (vertices.length < 2)
+        return;
+
+      for (var i = 0; i < vertices.length; i+=2) {
+        vertices[i] += x;
+        vertices[i+1] += y;
+      }
+    },
     randomFlip: function(val) {
       val = Math.abs(val);
       var n = Math.random(val * 2) - val;
@@ -156,7 +170,14 @@ var elGenie = (function() {
                     620,60, 880,0, 1020,190,
                     1020,280, 777,515, 870,630,
                     270,625, 403,540];
-    var scaledVertices = utils.resizePolygon(vertices, null, .5)
+    var scaledVertices = utils.resizePolygon(vertices, null, .5);
+
+    var _g = new PIXI.Graphics();
+    _g.beginFill(0x00FF00);
+    utils.movePolygon(scaledVertices, 115, -45);
+    //utils.drawPolygon(_g, scaledVertices);
+    stage.addChild(_g);
+    var scaledPolygon = new PIXI.Polygon( scaledVertices );
 
     // tint the sprite in a color (hex RRGGBB)
     sprGenie.tint = 0xDDCC22;
@@ -199,14 +220,14 @@ var elGenie = (function() {
           spawnLampParticle(sg.x - sg.width * 0.35, sg.y - sg.height * 0.11);
           spawnLampParticle(sg.x + sg.width * 0.35, sg.y + sg.height * .07);
         }
-        if (this.wobbleFactor > 0.2) {
+        if (this.wobbleFactor > 0.1) {
           spawnLampParticle(sg.x + sg.width * 0.05, sg.y - sg.height * .3);
           spawnLampParticle(sg.x + sg.width * 0.1, sg.y + sg.height * .15);
         }
 
-        if (ticks > this.rubCycle + 30) {
+        if (ticks > this.rubCycle + 40) {
           this.rubCycle = ticks;
-          this.wobbleFactor -= sprGenie.defaultWobbleFactor * 2;
+          this.wobbleFactor /= 2;
           if (this.wobbleFactor < sprGenie.defaultWobbleFactor)
             this.wobbleFactor = 0;
         }
@@ -250,6 +271,12 @@ var elGenie = (function() {
     // variables to limit particle spawn rate
     var particleLimit = 3;
     var particleCounter = 0;
+
+    // DEBUG
+    sprGenie.click = function(data) {
+      sparkleMode++;
+      sparkleMode %= 3;
+    }
 
     stage.mousemove = stage.touchmove = function(data) {
       data.originalEvent.preventDefault();
@@ -324,7 +351,13 @@ var elGenie = (function() {
     function spawnLampParticle(x, y) {
 
       var d = utils.distance(sprGenie, {x: x, y: y}) // distance
-      d = (Math.random() * .3 + 0.7) * d;
+
+      switch (sparkleMode) {
+        case 0: d = (Math.random() * .9 + 0.1) * d; break;
+        case 1: d = (Math.random() * .3 + 0.7) * d; break;
+      }
+
+
       var dx = x - sprGenie.x;
       var dy = y - sprGenie.y;
 
@@ -338,13 +371,27 @@ var elGenie = (function() {
       info.setInfo2("x: " + x + ", y: " + y + "\nd: " + d + ", cos: " + Math.cos(r) * d + ", sin: " + Math.sin(r) * d);
 
 
+      switch (sparkleMode) {
+        case 2:
+          for (var i = 0; i < 100; i++) {
+            nx = Math.random() * width;
+            ny = Math.random() * height;
+            if (scaledPolygon.contains(nx, ny))
+              break;
+          }
+          break;
+      }
 
       var p = new Particle(nx, ny);
       //p.limit = 1;
       //p.subImg = 30;
       p.move = function() {
         this.v.y += this.g;
-        this.x += this.v.x * Math.sin(this.y);
+        switch (sparkleMode) {
+          case 0: this.x += this.v.x * Math.sin(this.y) * 2;
+          case 1: this.x += this.v.x * Math.sin(this.y) * 1;
+          default: this.x += this.v.x;
+        }
         this.y += this.v.y;
       }
       p.v.y -= Math.abs(r) * .5;
@@ -418,7 +465,7 @@ var elGenie = (function() {
       sprGenie.tick();
 
       // DEBUG display genie lamps rotation radians
-      info.setInfo1("Rotation (Rad): " + sprGenie.rotation);
+      info.setInfo1("Sparkle Mode: " + sparkleMode);
 
       // update particles
       var buf = [];
