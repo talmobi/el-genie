@@ -21,6 +21,8 @@ var elGenie = (function() {
   var DEBUG = false;
   var WIDTH = window.innerWidth; // 960
   var HEIGHT = window.innerHeight;
+  var FPS = 20;
+  var MSPF = 1000 / FPS; // MS per Frame
 
   /**
     * Custom utility methods
@@ -236,7 +238,7 @@ var elGenie = (function() {
         var yoff = -80;
         var sg = sprGenie;
         if (this.wobbleFactor > 0.015) {
-          if (Math.random() * 10 < 1.5)
+          if (Math.random() * 10 < 1)
           spawnLampParticle(sg.x - sg.width * 0.35, sg.y - sg.height * 0.11);
         }
         if (this.wobbleFactor > 0.1) {
@@ -244,10 +246,9 @@ var elGenie = (function() {
           spawnLampParticle(sg.x + sg.width * 0.35, sg.y + sg.height * .07);
         }
         if (this.wobbleFactor > 0.15) {
-          if (Math.random() * 10 < 5) {
+          if (Math.random() * 10 < 3) {
             spawnLampParticle(sg.x + sg.width * 0.05, sg.y - sg.height * .3);
             spawnLampParticle(sg.x + sg.width * 0.1, sg.y + sg.height * .15);
-            spawnLampParticle(sg.x + sg.width * 0.3, sg.y + sg.height * .20);
           }
         }
 
@@ -285,7 +286,7 @@ var elGenie = (function() {
     */
 
     // variables to limit particle spawn rate
-    var particleLimit = 12;
+    var particleLimit = 18;
     var particleCounter = 0;
 
     // DEBUG
@@ -312,7 +313,7 @@ var elGenie = (function() {
     sprGenie.mousedown = sprGenie.touchstart = function(data) {
       data.originalEvent.preventDefault();
 
-      sprGenie.tint = Math.random() * 0xFFFF00;
+      sprGenie.tint = (Math.random() * 0xFF0000) | 0xFF0000;
     }
 
     stage.mousemove = stage.touchmove = sprGenie.touchmove = function(data) {
@@ -328,8 +329,8 @@ var elGenie = (function() {
 
         // spawn particles
         if (mouseTrailToggle) {
-          for (var i = 0; i < 2; i++) {
-            var p = new Particle(currentPosition.x + i * 5, currentPosition.y);
+          for (var i = 0; i < 1; i++) {
+            var p = new Particle(currentPosition.x + i * 5 - 16, currentPosition.y - 16);
             sparkles.push(p);
             sparkleContainer.addChild(p);
           }
@@ -423,6 +424,8 @@ var elGenie = (function() {
       }
 
       var p = new Particle(nx, ny);
+      p.scale.x = p.scale.y = 2;
+      p.anchor.x = p.anchor.y = .5;
       //p.limit = 1;
       //p.subImg = 30;
       p.move = function() {
@@ -447,7 +450,7 @@ var elGenie = (function() {
       p.position.x = x;
       p.position.y = y;
       p.ticks = 0;
-      p.limit = 2 + Math.random() * 3 - 1 | 0;
+      p.limit = 0 + Math.random() * 4 - 1 | 0;
       p.subImg = 0;
       p.removed = false;
       p.g = .02 * Math.random(); // gravity
@@ -492,15 +495,19 @@ var elGenie = (function() {
       */
     var ticks = 0;
 
-    setInterval(function() {
+    // render loop
+    function renderLoop() {
       ticks++;
-    }, 20);
+
+      animate(renderLoop);
+    }
+    renderLoop();
+    
 
     requestAnimFrame( animate );
-    function animate() {
-      requestAnimFrame( animate );
-
-      //ticks++;
+    function animate(callback) {
+      //requestAnimFrame( animate );
+      setTimeout(callback, MSPF);
 
       sprGenie.tick();
 
