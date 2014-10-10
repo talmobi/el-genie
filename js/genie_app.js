@@ -339,7 +339,8 @@ var elGenie = (function() {
         if (mouseTrailToggle) {
           for (var i = 0; i < 2; i++) {
             var p = new Particle(currentPosition.x + i * 5 - 16, currentPosition.y - 16);
-            p.v.x += i * 10;
+            p.v.x += i * .15;
+            p.v.y += .2;
             sparkles.push(p);
             sparkleContainer.addChild(p);
           }
