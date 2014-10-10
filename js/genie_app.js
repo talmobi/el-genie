@@ -195,8 +195,8 @@ var elGenie = (function() {
     utils.movePolygon(scaledVertices, xx, yy);
 
 
-    utils.drawPolygon(_g, scaledVertices);
-    stage.addChild(_g);
+    //utils.drawPolygon(_g, scaledVertices);
+    //stage.addChild(_g);
     var scaledPolygon = new PIXI.Polygon( scaledVertices );
 
 
@@ -227,7 +227,7 @@ var elGenie = (function() {
 
     sprGenie.tick = function() {
       if (this.isRubbing) {
-        if (ticks > this.rubStart + 300) {
+        if (ticks > this.rubStart + 150) {
           this.isRubbing = false;
           this.wobbleFactor = sprGenie.defaultWobbleFactor;
           this.rotation = 0;
@@ -238,16 +238,23 @@ var elGenie = (function() {
         var xoff = 200;
         var yoff = -80;
         var sg = sprGenie;
-        if (this.wobbleFactor > 0.001) {
+        if (this.wobbleFactor > 0.015) {
+          if (Math.random() * 10 < 1.5)
           spawnLampParticle(sg.x - sg.width * 0.35, sg.y - sg.height * 0.11);
-          spawnLampParticle(sg.x + sg.width * 0.35, sg.y + sg.height * .07);
         }
         if (this.wobbleFactor > 0.1) {
-          spawnLampParticle(sg.x + sg.width * 0.05, sg.y - sg.height * .3);
-          spawnLampParticle(sg.x + sg.width * 0.1, sg.y + sg.height * .15);
+          if (Math.random() * 10 < 2)
+          spawnLampParticle(sg.x + sg.width * 0.35, sg.y + sg.height * .07);
+        }
+        if (this.wobbleFactor > 0.15) {
+          if (Math.random() * 10 < 5) {
+            spawnLampParticle(sg.x + sg.width * 0.05, sg.y - sg.height * .3);
+            spawnLampParticle(sg.x + sg.width * 0.1, sg.y + sg.height * .15);
+            spawnLampParticle(sg.x + sg.width * 0.3, sg.y + sg.height * .20);
+          }
         }
 
-        if (ticks > this.rubCycle + 40) {
+        if (ticks > this.rubCycle + 20) {
           this.rubCycle = ticks;
           this.wobbleFactor /= 2;
           if (this.wobbleFactor < sprGenie.defaultWobbleFactor)
