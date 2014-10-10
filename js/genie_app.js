@@ -294,9 +294,12 @@ var elGenie = (function() {
     var particleCounter = 0;
 
     // DEBUG
-    sprGenie.click = function(data) {
-      sparkleMode++;
-      sparkleMode %= 3;
+    if (DEBUG) {
+      sprGenie.click = function(data) {
+        data.originalEvent.preventDefault();
+        sparkleMode++;
+        sparkleMode %= 3;
+      }
     }
 
     var mouseTrailToggle = true;
@@ -542,18 +545,22 @@ var elGenie = (function() {
       var width = window.innerWidth;
       var height = window.innerHeight;
 
+      // position the app
+      renderer.view.style.position = "absolute";
+      renderer.view.style.top = "0px";
+      renderer.view.style.left = "0px";
+      renderer.resize(width, height);
+
       // set sprGenie at center of screen
       sprGenie.position.x = width / 2 | 0;
       sprGenie.position.y = height / 2 | 0;
 
       initPolygon();
 
-      renderer.resize(width, height);
 
       // remove all sparkles
       for (var i = 0; i < sparkles.length; i++) {
         var p = sparkles[i];
-
         p.removed = true;
       }
     }
