@@ -19,7 +19,7 @@ var elGenie = (function() {
   var sparkleMode = 2;
   var SCALE = .5;
   var DEBUG = false;
-  var WIDTH = window.innerWidth; // 960
+  var WIDTH = 960 || window.innerWidth; // 960
   var HEIGHT = window.innerHeight;
   var FPS = 20;
   var MSPF = 1000 / FPS; // MS per Frame
@@ -545,7 +545,7 @@ var elGenie = (function() {
 
     // resize on window resize
     function resize() {
-      var width = window.innerWidth;
+      var width = WIDTH || window.innerWidth;
       var height = window.innerHeight;
 
       // position the app
