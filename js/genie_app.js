@@ -546,6 +546,7 @@ var elGenie = (function() {
     // resize on window resize
     function resize() {
       var width = ((window.innerWidth > WIDTH) ? window.innerWidth : WIDTH) || WIDTH;
+      width = WIDTH;
       var height = window.innerHeight;
 
       // position the app
