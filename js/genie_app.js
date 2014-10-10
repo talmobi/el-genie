@@ -521,7 +521,9 @@ var elGenie = (function() {
 
       // DEBUG display genie lamps rotation radians
       //info.setInfo1("Sparkle Mode: " + sparkleMode + " / 2\n MouseTrail: "  + ((mouseTrailToggle) ? "ON (space)" : "OFF (space)") );
-      info.setInfo1( "w: " + renderer.view.width + ", h: " + renderer.view.height + "\n | " + ((mouseTrailToggle) ? "ON (space)" : "OFF (space)") );
+      info.setInfo1( "w: " + renderer.view.width + ", h: " + renderer.view.height + "\n | " +
+                    "iw: " + window.innerWidth + ", ih: " + window.innerHeight + "\n | " +
+                    ((mouseTrailToggle) ? "ON (space)" : "OFF (space)") );
 
       // update particles
       var buf = [];
