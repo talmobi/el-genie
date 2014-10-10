@@ -17,11 +17,13 @@ var elGenie = (function() {
     * App configuration
     */
   var sparkleMode = 2;
-  var SCALE = .75;
+  var SCALE = .5;
   var DEBUG = false;
+  var WIDTH = window.innerWidth; // 960
+  var HEIGHT = window.innerHeight;
 
   /**
-    * Utility methods
+    * Custom utility methods
     */
   var utils = {
     distance: function(point1, point2) {
@@ -71,7 +73,7 @@ var elGenie = (function() {
       g.endFill();
     },
     resizePolygon: function(vertices, origin, scale) {
-      var origin = {x: 0, y: 0};
+      var origin = origin || {x: 0, y: 0};
       // calculate encircling rectangle of polygon.
       var or = utils.rectOfPolygon(vertices);
 
@@ -111,15 +113,14 @@ var elGenie = (function() {
     },
     randomFlip: function(val) {
       val = Math.abs(val);
-      var n = Math.random(val * 2) - val;
-      return n;
+      return ((Math.random() * (val * 2)) - val);
     }
   }
 
   var canvas;
 
-  var width = 960;
-  var height = window.innerHeight;
+  var width = WIDTH || window.innerWidth;
+  var height = HEIGHT || window.innerHeight;
 
   var defaultCanvasId = "elGenieCanvas";
 
@@ -169,8 +170,6 @@ var elGenie = (function() {
     sprGenie.position.x = width / 2 | 0;
     sprGenie.position.y = height / 2 | 0;
 
-    SCALE = .5;
-
     // shrink the lamp a bit
     sprGenie.scale.x = sprGenie.scale.y = SCALE;
 
@@ -194,9 +193,10 @@ var elGenie = (function() {
     //var yy = sprGenie.y - sprGenie.height * .75;
     utils.movePolygon(scaledVertices, xx, yy);
 
-
-    //utils.drawPolygon(_g, scaledVertices);
-    //stage.addChild(_g);
+    if (DEBUG) {
+      utils.drawPolygon(_g, scaledVertices);
+      stage.addChild(_g);
+    }
     var scaledPolygon = new PIXI.Polygon( scaledVertices );
 
 
@@ -220,9 +220,6 @@ var elGenie = (function() {
       this.rubCycle = ticks;
       this.isRubbing = true;
       this.wobbleFactor += sprGenie.defaultWobbleFactor;
-
-      //if (this.wobbleFactor > .1)
-      //  this.wobbleFactor += sprGenie.defaultWobbleFactor;
     }
 
     sprGenie.tick = function() {
@@ -287,7 +284,7 @@ var elGenie = (function() {
     */
 
     // variables to limit particle spawn rate
-    var particleLimit = 3;
+    var particleLimit = 12;
     var particleCounter = 0;
 
     // DEBUG
@@ -308,7 +305,7 @@ var elGenie = (function() {
       }
     }
 
-    stage.mousemove = stage.touchmove = function(data) {
+    stage.mousemove = stage.touchmove = sprGenie.touchmove = function(data) {
       data.originalEvent.preventDefault();
 
       var currentPosition = data.getLocalPosition(sprGenie.parent);
