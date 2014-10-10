@@ -550,10 +550,12 @@ var elGenie = (function() {
       renderer.view.style.top = "0px";
       renderer.view.style.left = "0px";
       renderer.resize(width, height);
+      renderer.view.width = width;
+      renderer.view.height = height;
 
       // set sprGenie at center of screen
-      sprGenie.position.x = width / 2 | 0;
-      sprGenie.position.y = height / 2 | 0;
+      sprGenie.position.x = (width / 2) | 0;
+      sprGenie.position.y = (height / 2) | 0;
 
       initPolygon();
 
