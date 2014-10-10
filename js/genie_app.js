@@ -197,11 +197,11 @@ var elGenie = (function() {
         var sg = sprGenie;
         if (this.wobbleFactor > 0.001) {
           spawnLampParticle(sg.x - sg.width * 0.35, sg.y - sg.height * 0.11);
-          //spawnLampParticle(sg.x + sg.width * 0.10, sg.y + sg.height * .1);
+          spawnLampParticle(sg.x + sg.width * 0.35, sg.y + sg.height * .07);
         }
         if (this.wobbleFactor > 0.2) {
-          //spawnLampParticle(sg.x + sg.width * 0.05, sg.y - sg.height * .3);
-          //spawnLampParticle(sg.x - sg.width * 0.2, sg.y + sg.height * .05);
+          spawnLampParticle(sg.x + sg.width * 0.05, sg.y - sg.height * .3);
+          spawnLampParticle(sg.x + sg.width * 0.1, sg.y + sg.height * .15);
         }
 
         if (ticks > this.rubCycle + 30) {
@@ -324,6 +324,7 @@ var elGenie = (function() {
     function spawnLampParticle(x, y) {
 
       var d = utils.distance(sprGenie, {x: x, y: y}) // distance
+      d = (Math.random() * .3 + 0.7) * d;
       var dx = x - sprGenie.x;
       var dy = y - sprGenie.y;
 
@@ -331,16 +332,23 @@ var elGenie = (function() {
 
       var r = sprGenie.rotation + or; // rotation in radians.
 
-      var nx = sprGenie.x - d * Math.cos(r);
-      var ny = sprGenie.y - d * Math.sin(r);
+      var nx = sprGenie.x - (d * Math.cos(r)) * ((dx > 0) ? -1 : 1);
+      var ny = sprGenie.y - (d * Math.sin(r)) * ((dy > 0) ? 1 : 1);
 
       info.setInfo2("x: " + x + ", y: " + y + "\nd: " + d + ", cos: " + Math.cos(r) * d + ", sin: " + Math.sin(r) * d);
 
 
 
       var p = new Particle(nx, ny);
-      p.limit = 1;
-      p.subImg = 30;
+      //p.limit = 1;
+      //p.subImg = 30;
+      p.move = function() {
+        this.v.y += this.g;
+        this.x += this.v.x * Math.sin(this.y);
+        this.y += this.v.y;
+      }
+      p.v.y -= Math.abs(r) * .5;
+
       sparkles.push(p);
       sparkleContainer.addChild(p);
     }
@@ -374,6 +382,10 @@ var elGenie = (function() {
           this.kill();
         }
 
+        this.move();
+      }
+
+      p.move = function() {
         this.v.y += this.g;
         this.x += this.v.x;
         this.y += this.v.y;
