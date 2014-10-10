@@ -520,7 +520,8 @@ var elGenie = (function() {
       sprGenie.tick();
 
       // DEBUG display genie lamps rotation radians
-      info.setInfo1("Sparkle Mode: " + sparkleMode + " / 2\n MouseTrail: "  + ((mouseTrailToggle) ? "ON (space)" : "OFF (space)") );
+      //info.setInfo1("Sparkle Mode: " + sparkleMode + " / 2\n MouseTrail: "  + ((mouseTrailToggle) ? "ON (space)" : "OFF (space)") );
+      info.setInfo1( "w: " + renderer.view.width + ", h: " + renderer.view.height + "\n | " + ((mouseTrailToggle) ? "ON (space)" : "OFF (space)") );
 
       // update particles
       var buf = [];
@@ -550,8 +551,6 @@ var elGenie = (function() {
       renderer.view.style.top = "0px";
       renderer.view.style.left = "0px";
       renderer.resize(width, height);
-      renderer.view.width = width;
-      renderer.view.height = height;
 
       // set sprGenie at center of screen
       sprGenie.position.x = (width / 2) | 0;
