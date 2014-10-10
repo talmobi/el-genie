@@ -71,12 +71,9 @@ var elGenie = (function() {
       g.endFill();
     },
     resizePolygon: function(vertices, origin, scale) {
-      if (!origin) {
-        var origin = {x: 0, y: 0};
-
-        // calculate encircling rectangle of polygon.
-        var or = utils.rectOfPolygon(vertices);
-      }
+      var origin = {x: 0, y: 0};
+      // calculate encircling rectangle of polygon.
+      var or = utils.rectOfPolygon(vertices);
 
       // normalized vertices
       var nv = [];
