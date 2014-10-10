@@ -296,6 +296,18 @@ var elGenie = (function() {
       sparkleMode %= 3;
     }
 
+    var mouseTrailToggle = true;
+
+    // DEBUG
+    // toggle mouse trailing effect
+    window.onkeyup = function(e) {
+      var key = e.keyCode ? e.keyCode : e.which;
+
+      if (key == 32) { // space 
+        mouseTrailToggle = !mouseTrailToggle;
+      }
+    }
+
     stage.mousemove = stage.touchmove = function(data) {
       data.originalEvent.preventDefault();
 
@@ -306,11 +318,12 @@ var elGenie = (function() {
         particleCounter = 0;
 
         // spawn particles
-        for (var i = 0; i < 2; i++) {
-          /*var p = new Particle(currentPosition.x + i * 5, currentPosition.y);
-          sparkles.push(p);
-          sparkleContainer.addChild(p);
-          */
+        if (mouseTrailToggle) {
+          for (var i = 0; i < 2; i++) {
+            var p = new Particle(currentPosition.x + i * 5, currentPosition.y);
+            sparkles.push(p);
+            sparkleContainer.addChild(p);
+          }
         }
       }
 
@@ -483,7 +496,7 @@ var elGenie = (function() {
       sprGenie.tick();
 
       // DEBUG display genie lamps rotation radians
-      info.setInfo1("Sparkle Mode: " + sparkleMode + " / 2");
+      info.setInfo1("Sparkle Mode: " + sparkleMode + " / 2\n MouseTrail: "  + ((mouseTrailToggle) ? "ON (space)" : "OFF (space)") );
 
       // update particles
       var buf = [];
