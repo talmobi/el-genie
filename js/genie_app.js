@@ -1,28 +1,33 @@
 var elGenie = (function() {
 
   /**
-    * Info.js (based on stats.js)
-    */
-  var info = new Info();
-  info.setMode(0); // 0: info box 1, 1: info box 2
-
-  // Align top-left
-  info.domElement.style.position = 'absolute';
-  info.domElement.style.left = '0px';
-  info.domElement.style.top = '0px';
-
-  document.body.appendChild( info.domElement );
-
-  /**
     * App configuration
     */
+  var ismobile = (WURFL) ? WURFL.is_mobile : true;
   var sparkleMode = 2;
   var SCALE = .5;
   var DEBUG = false;
   var WIDTH = 960 || window.innerWidth; // 960
   var HEIGHT = window.innerHeight;
-  var FPS = 20;
+  var FPS = (ismobile) ? 10 : 20;
   var MSPF = 1000 / FPS; // MS per Frame
+  var TPS = 20;
+  var MSPT = 1000 / TPS; // MS per Frame
+
+  /**
+    * Info.js (based on stats.js)
+    */
+  if (DEBUG) {
+    var info = new Info();
+    info.setMode(0); // 0: info box 1, 1: info box 2
+
+    // Align top-left
+    info.domElement.style.position = 'absolute';
+    info.domElement.style.left = '0px';
+    info.domElement.style.top = '0px';
+
+    document.body.appendChild( info.domElement );
+  }
 
   /**
     * Custom utility methods
@@ -273,10 +278,10 @@ var elGenie = (function() {
       this.startPosition = null;
     }
 
-    sprGenie.mousedown = sprGenie.touchdown = function(data) {
+    sprGenie.mousedown = sprGenie.click = sprGenie.touchdown = function(data) {
       data.originalEvent.preventDefault();
       var p = data.getLocalPosition(this.parent);
-      this.rub();
+      sprGenie.rub();
     }
 
     /*
@@ -290,7 +295,7 @@ var elGenie = (function() {
     */
 
     // variables to limit particle spawn rate
-    var particleLimit = 12;
+    var particleLimit = (ismobile) ? 6 : 12;
     var particleCounter = 0;
 
     // DEBUG
@@ -306,7 +311,7 @@ var elGenie = (function() {
 
     // DEBUG
     // toggle mouse trailing effect
-    if (true || DEBUG) {
+    if (DEBUG) {
       window.onkeyup = function(e) {
         var key = e.keyCode ? e.keyCode : e.which;
 
@@ -319,15 +324,11 @@ var elGenie = (function() {
     // touch test DEBUG
     sprGenie.mousedown = sprGenie.touchstart = function(data) {
       data.originalEvent.preventDefault();
-
-      sprGenie.tint = (Math.random() * 0xFF0000) | 0xFF0000;
     }
 
     //stage.mousemove = stage.touchmove = sprGenie.touchmove = function(data) {
     sprGenie.mousemove = sprGenie.touchmove = function(data) {
       data.originalEvent.preventDefault();
-
-      sprGenie.tint = 0x6565FF;
 
       var currentPosition = data.getLocalPosition(sprGenie.parent);
 
@@ -419,7 +420,9 @@ var elGenie = (function() {
       var nx = sprGenie.x - (d * Math.cos(r)) * ((dx > 0) ? -1 : 1);
       var ny = sprGenie.y - (d * Math.sin(r)) * ((dy > 0) ? 1 : 1);
 
-      info.setInfo2("x: " + x + ", y: " + y + "\nd: " + d + ", cos: " + Math.cos(r) * d + ", sin: " + Math.sin(r) * d);
+      if (info) {
+        info.setInfo2("x: " + x + ", y: " + y + "\nd: " + d + ", cos: " + Math.cos(r) * d + ", sin: " + Math.sin(r) * d);
+      }
 
 
       switch (sparkleMode) {
@@ -434,7 +437,7 @@ var elGenie = (function() {
       }
 
       var p = new Particle(nx, ny);
-      p.scale.x = p.scale.y = 2;
+      p.scale.x = p.scale.y = 2 + Math.random();
       p.anchor.x = p.anchor.y = .5;
       //p.limit = 1;
       //p.subImg = 30;
@@ -503,29 +506,24 @@ var elGenie = (function() {
     /**
       * Start app
       */
-    var ticks = 0;
 
     // render loop
     function renderLoop() {
-      ticks++;
-
       animate(renderLoop);
     }
     renderLoop();
-    
 
-    requestAnimFrame( animate );
-    function animate(callback) {
-      //requestAnimFrame( animate );
-      setTimeout(callback, MSPF);
+    // update loop
+    var ticks = 0;
+    function updateLoop() {
+      ticks++;
+      update(updateLoop);
+    }
+    updateLoop();
+
+    function update(callback) {
 
       sprGenie.tick();
-
-      // DEBUG display genie lamps rotation radians
-      //info.setInfo1("Sparkle Mode: " + sparkleMode + " / 2\n MouseTrail: "  + ((mouseTrailToggle) ? "ON (space)" : "OFF (space)") );
-      info.setInfo1( "w: " + renderer.view.width + ", h: " + renderer.view.height + "\n | " +
-                    "iw: " + window.innerWidth + ", ih: " + window.innerHeight + "\n | " +
-                    ((mouseTrailToggle) ? "ON (space)" : "OFF (space)") );
 
       // update particles
       var buf = [];
@@ -540,9 +538,27 @@ var elGenie = (function() {
         }
       }
       sparkles = buf;
+
+      // schedule next tick
+      setTimeout(callback, MSPT);
+    }
+    
+
+    //requestAnimFrame( animate );
+    function animate(callback) {
+      // DEBUG display genie lamps rotation radians
+      //info.setInfo1("Sparkle Mode: " + sparkleMode + " / 2\n MouseTrail: "  + ((mouseTrailToggle) ? "ON (space)" : "OFF (space)") );
+      if (DEBUG) {
+        info.setInfo1( "w: " + renderer.view.width + ", h: " + renderer.view.height + "\n | " +
+                      "iw: " + window.innerWidth + ", ih: " + window.innerHeight + "\n | " +
+                      ((mouseTrailToggle) ? "ON (space)" : "OFF (space)") );
+      }
       
       // render stage
       renderer.render(stage);
+
+      //requestAnimFrame( animate );
+      setTimeout(callback, MSPF);
     }
 
     // resize on window resize
@@ -573,6 +589,8 @@ var elGenie = (function() {
     window.addEventListener("resize", resize, false);
 
   }
+
+  //console.log(WURFL);
 
   /**
     * Public methods.
