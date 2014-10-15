@@ -211,6 +211,10 @@ var elGenie = (function() {
     }
 
 
+    // set mobile frindly hit area
+    if (ismobile) {
+      sprGenie.hitArea = new PIXI.Rectangle(0, 0, window.innerWidth, window.innerHeight);
+    }
 
     // tint the sprite in a color (hex RRGGBB)
     sprGenie.tint = 0xDDCC22;
@@ -280,7 +284,6 @@ var elGenie = (function() {
 
     sprGenie.mousedown = sprGenie.click = sprGenie.touchdown = function(data) {
       data.originalEvent.preventDefault();
-      var p = data.getLocalPosition(this.parent);
       sprGenie.rub();
     }
 
@@ -589,8 +592,12 @@ var elGenie = (function() {
       }
     }
 
-    window.addEventListener("resize", resize, false);
+    // set mobile frindly hit area
+    if (ismobile) {
+      sprGenie.hitArea = new PIXI.Rectangle(0, 0, window.innerWidth, window.innerHeight);
+    }
 
+    window.addEventListener("resize", resize, false);
   }
 
   //console.log(WURFL);
