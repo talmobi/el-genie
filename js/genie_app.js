@@ -696,10 +696,12 @@ var elGenie = (function() {
       }
 
       // remove all sparkles
+      /*
       for (var i = 0; i < sparkles.length; i++) {
         var p = sparkles[i];
         p.removed = true;
       }
+      */
     }
 
     function mobileHitAreaFix() {
