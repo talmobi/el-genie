@@ -593,9 +593,17 @@ var elGenie = (function() {
     }
 
     // set mobile frindly hit area
-    if (ismobile) {
+    if (true || ismobile) {
       sprGenie.hitArea = new PIXI.Rectangle(0, 0, window.innerWidth, window.innerHeight);
     }
+
+    // draw hitbox for testing
+    var g = new PIXI.Graphics();
+    g.beginFill(0x00FF00);
+    g.drawRect(sprGenie.x - sprGenie.width * sprGenie.anchor.x,
+               sprGenie.y - sprGenie.height * sprGenie.anchor.y, sprGenie.width, sprGenie.height);
+    g.endFill();
+    stage.addChild(g);
 
     window.addEventListener("resize", resize, false);
   }
