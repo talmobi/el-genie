@@ -213,7 +213,9 @@ var elGenie = (function() {
 
     // set mobile frindly hit area
     if (ismobile) {
-      sprGenie.hitArea = new PIXI.Rectangle(0, 0, window.innerWidth, window.innerHeight);
+      sprGenie.hitArea = new PIXI.Rectangle( -sprGenie.width * sprGenie.anchor.x,
+        -sprGenie.height * sprGenie.anchor.y, 
+        window.innerWidth, window.innerHeight);
     }
 
     // tint the sprite in a color (hex RRGGBB)
@@ -600,7 +602,7 @@ var elGenie = (function() {
     }
 
     // draw hitbox for testing
-    if (sprGenie.hitArea && true) {
+    if (sprGenie.hitArea && DEBUG) {
       var g = new PIXI.Graphics();
       g.beginFill(0x00FF00);
       g.drawRect(sprGenie.hitArea.x + sprGenie.width * sprGenie.anchor.x,
