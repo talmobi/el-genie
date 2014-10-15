@@ -586,7 +586,7 @@ var elGenie = (function() {
       mobileHitAreaFix();
 
       // draw hitbox for testing
-      if (sprGenie.hitArea && true) {
+      if (sprGenie.hitArea && DEBUG) {
         var g = new PIXI.Graphics();
         g.beginFill(0x00FF00);
         g.drawRect(sprGenie.hitArea.x + sprGenie.width * sprGenie.anchor.x,
@@ -609,6 +609,7 @@ var elGenie = (function() {
           window.innerWidth, window.innerHeight);
       }
     }
+    mobileHitAreaFix();
 
     window.addEventListener("resize", resize, false);
   }
