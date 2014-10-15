@@ -600,8 +600,8 @@ var elGenie = (function() {
     // draw hitbox for testing
     var g = new PIXI.Graphics();
     g.beginFill(0x00FF00);
-    g.drawRect(sprGenie.hitArea.x,
-               sprGenie.hitArea.y, sprGenie.hitArea.width, sprGenie.hitArea.height);
+    g.drawRect(sprGenie.hitArea.x + sprGenie.width * sprGenie.anchor.x,
+               sprGenie.hitArea.y + sprGenie.height * sprGenie.anchor.y, sprGenie.hitArea.width, sprGenie.hitArea.height);
     g.endFill();
     stage.addChild(g);
 
