@@ -220,7 +220,7 @@ var elGenie = (function() {
     sprGenie.buttonMode = true;
 
     // define the magnitude of the wobble effect
-    sprGenie.defaultWobbleFactor = .007;
+    sprGenie.defaultWobbleFactor = .007 * (ismobile ? 2 : 1);
     sprGenie.wobbleFactor = .005;
 
     // create rubbing function for genie
