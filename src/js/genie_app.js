@@ -221,7 +221,7 @@ var elGenie = (function() {
     sprGenie.buttonMode = true;
 
     // define the magnitude of the wobble effect
-    sprGenie.defaultWobbleFactor = .007 * (ismobile ? 2 : 1);
+    sprGenie.defaultWobbleFactor = .007 * (ismobile ? 3 : 1);
     sprGenie.wobbleFactor = .005;
 
     // create rubbing function for genie
@@ -278,7 +278,7 @@ var elGenie = (function() {
 
 
         // transition to video after wobble
-        if (this.wobbleFactor > .5) {
+        if (this.wobbleFactor > .3) {
           videoTransition();
         }
       }
@@ -288,8 +288,15 @@ var elGenie = (function() {
     function videoTransition() {
       running = false;
 
-      $('#video_id').slideDown(1000, 'swing',function() {
-        $(canvas).remove();
+      $('#video_id').css({top: '-' + window.innerHeight, display: 'block' });
+      $('#video_id').animate({
+        top: "+" + 0
+      }, {
+        duration: 6000,
+        complete: function() {
+          $(canvas).remove();
+        }
+
       });
 
     }
