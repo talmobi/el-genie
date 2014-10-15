@@ -11,7 +11,7 @@ var elGenie = (function() {
   var HEIGHT = window.innerHeight;
   var FPS = (ismobile) ? 20 : 20;
   var MSPF = 1000 / FPS; // MS per Frame
-  var TPS = (ismobile) ? 15 : 20;;
+  var TPS = (ismobile) ? 20 : 20;;
   var MSPT = 1000 / TPS; // MS per Frame
 
   /**
