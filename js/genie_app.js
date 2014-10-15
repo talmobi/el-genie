@@ -600,7 +600,7 @@ var elGenie = (function() {
     }
 
     // draw hitbox for testing
-    if (sprGenie.hitArea && DEBUG) {
+    if (sprGenie.hitArea && true) {
       var g = new PIXI.Graphics();
       g.beginFill(0x00FF00);
       g.drawRect(sprGenie.hitArea.x + sprGenie.width * sprGenie.anchor.x,
