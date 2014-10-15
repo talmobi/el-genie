@@ -593,8 +593,10 @@ var elGenie = (function() {
     }
 
     // set mobile frindly hit area
-    if (true || ismobile) {
-      sprGenie.hitArea = new PIXI.Rectangle(0, 0, window.innerWidth, window.innerHeight);
+    if (ismobile) {
+      sprGenie.hitArea = new PIXI.Rectangle( -sprGenie.width * sprGenie.anchor.x,
+        -sprGenie.height * sprGenie.anchor.y, 
+        window.innerWidth, window.innerHeight);
     }
 
     // draw hitbox for testing
