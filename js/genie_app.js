@@ -338,10 +338,11 @@ var elGenie = (function() {
 
         // spawn particles
         if (mouseTrailToggle) {
-          for (var i = 0; i < 2; i++) {
+          for (var i = 0; i < (ismobile ? 1 : 2); i++) {
             var p = new Particle(currentPosition.x + i * 5 - 16, currentPosition.y - 16);
             p.v.x += i * .15;
             p.v.y += .2;
+            p.scale.x = p.scale.y = (ismobile ? 2 : 1);
             sparkles.push(p);
             sparkleContainer.addChild(p);
           }
@@ -430,22 +431,24 @@ var elGenie = (function() {
           for (var i = 0; i < 100; i++) {
             nx = sprGenie.x - sprGenie.width + Math.random() * sprGenie.width * 2;
             ny = sprGenie.y - sprGenie.height + Math.random() * sprGenie.height * 2;
-            if (scaledPolygon.contains(nx, ny))
+            if (scaledPolygon.contains(nx, ny)) {
+              i = 100;
               break;
+            }
           }
           break;
       }
 
       var p = new Particle(nx, ny);
-      p.scale.x = p.scale.y = 2 + Math.random();
+      p.scale.x = p.scale.y = (2 + (ismobile ? 1 : 0)) + Math.random();
       p.anchor.x = p.anchor.y = .5;
       //p.limit = 1;
       //p.subImg = 30;
       p.move = function() {
         this.v.y += this.g;
         switch (sparkleMode) {
-          case 0: this.x += this.v.x * Math.sin(this.y) * 2;
-          case 1: this.x += this.v.x * Math.sin(this.y) * 1;
+          case 0: this.x += (this.v.x * Math.sin(this.y) * 2) | 0;
+          case 1: this.x += (this.v.x * Math.sin(this.y) * 1) | 0;
           default: this.x += this.v.x;
         }
         this.y += this.v.y;
