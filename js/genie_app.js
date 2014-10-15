@@ -366,32 +366,96 @@ var elGenie = (function() {
       }
     }
 
-    // do intro animation
-    var oldScaleX = sprGenie.scale.x;
-    sprGenie.scale.x = sprGenie.scale.y = 0.01;
-    
-    // add to stage
-    stage.addChild(sprGenie);
+    /**
+      * Intro Animation
+      */
+    function zoominIntro() {
+      var oldScaleX = sprGenie.scale.x;
+      sprGenie.scale.x = sprGenie.scale.y = 0.02;
+      
+      // add to stage
+      stage.addChild(sprGenie);
 
-    function introLoop() {
-      introAnimation(introLoop);
-    }
-    introLoop();
+      // loop
+      function introLoop() {
+        introAnimation(introLoop);
+      }
+      introLoop();
 
-    function introAnimation(callback) {
-      if (sprGenie.scale.x < oldScaleX) {
+      function introAnimation(callback) {
+        if (sprGenie.scale.x < oldScaleX) {
 
-        //var s = (sprGenie.scale.x + 0.005);
-        var s = (sprGenie.scale.x + 0.01) * 1.05;
+          //var s = (sprGenie.scale.x + 0.005);
+          var s = (sprGenie.scale.x) * 1.25;
 
-        sprGenie.scale.x = sprGenie.scale.y = s;
+          if (s > oldScaleX) {
+            s = oldScaleX;
+            sprGenie.rub();
+            sprGenie.rub();
+            
+            setTimeout(function() {
+              spawnLampParticle();
+            }, 0);
+          }
 
-        setTimeout(callback, MSPF);
-      } else {
-        sprGenie.scale.x = sprGenie.scale.y = oldScaleX;
+          sprGenie.scale.x = sprGenie.scale.y = s;
+
+          setTimeout(callback, MSPF);
+        } else {
+          sprGenie.scale.x = sprGenie.scale.y = oldScaleX;
+        }
       }
     }
 
+    function dropIntro() {
+      var oldY = sprGenie.y;
+      sprGenie.y = -sprGenie.height;
+
+      var grav = 2;
+      var yspd = 5;
+      var bounceCount = 0;
+      var bounceMax = 5;
+
+      // add to stage
+      stage.addChild(sprGenie);
+
+      // loop
+      function introLoop() {
+        introAnimation(introLoop);
+      }
+      introLoop();
+
+      function introAnimation(callback) {
+        if (sprGenie.y < oldY) {
+
+          yspd += grav;
+          s = sprGenie.y + yspd;
+
+          if (s > oldY) {
+            s = oldY - (s - oldY);
+            sprGenie.rub();
+            
+            spawnParticle();
+            setTimeout(function() {
+              spawnParticle();
+              spawnLampParticle();
+            }, 0);
+
+            yspd = -yspd / 2;
+            bounceCount++;
+          }
+
+          sprGenie.y = s;
+
+          if (bounceCount < bounceMax) {
+            setTimeout(callback, MSPF);
+          }
+        } else {
+          sprGenie.y = oldY;
+        }
+      }
+    }
+    dropIntro();
 
     /**
       * Configure the mouse trailng sparkles.
@@ -416,6 +480,18 @@ var elGenie = (function() {
     var sparkles = [];
 
     function spawnParticle(x, y) {
+
+      if (!x || !y) {
+        for (var i = 0; i < 100; i++) {
+            x = sprGenie.x - sprGenie.width + Math.random() * sprGenie.width * 2;
+            y = sprGenie.y - sprGenie.height + Math.random() * sprGenie.height * 2;
+            if (scaledPolygon.contains(x, y)) {
+              i = 100;
+              break;
+            }
+          }
+      }
+
       var p = new Particle(x, y);
       sparkles.push(p);
       sparkleContainer.addChild(p);
@@ -423,6 +499,10 @@ var elGenie = (function() {
 
     // spawn particle relative to the wobbling genie lamp
     function spawnLampParticle(x, y) {
+      if (!x || !y) {
+        x = sprGenie.x;
+        y = sprGenie.y;
+      }
 
       var d = utils.distance(sprGenie, {x: x, y: y}) // distance
 

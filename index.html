@@ -11,11 +11,19 @@
 
     /* works in IE */
     #bg {
+      z-index: -1;
       position: fixed;
       top: 0;
       left: 0;
       min-width: 100%;
       min-height: 100%;
+    }
+
+    #elGenieText img {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      padding-top: 10px;
     }
   </style>
 </head>
@@ -23,6 +31,12 @@
   <img src="images/bg.jpg" id="bg" alt="">
 
   <canvas id='elGenieCanvas'></canvas>
+
+  <div id='elGenieText' >
+    <img src="images/top_whirly.png">
+    <img src="images/whishes.png">
+    <img src="images/base_whirly.png">
+  </div>
 
   <script type="text/javascript" src="info.js"></script>
   <script src="js/pixi.dev.js"></script>
