@@ -604,8 +604,8 @@ var elGenie = (function() {
 
     function mobileHitAreaFix() {
       if (ismobile) {
-        sprGenie.hitArea = new PIXI.Rectangle( sprGenie.width * sprGenie.anchor.x,
-          sprGenie.height * sprGenie.anchor.y, 
+        sprGenie.hitArea = new PIXI.Rectangle( -sprGenie.width * sprGenie.anchor.x,
+          -sprGenie.height * sprGenie.anchor.y, 
           window.innerWidth, window.innerHeight);
       }
     }
