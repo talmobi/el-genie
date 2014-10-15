@@ -180,8 +180,6 @@ var elGenie = (function() {
     // shrink the lamp a bit
     sprGenie.scale.x = sprGenie.scale.y = SCALE;
 
-
-
     // defines a polygon shape around the lamp (for more accurate collision detection)
     var vertices = [0,300, 135,235, 488,290,
                     620,60, 880,0, 1020,190,
@@ -368,8 +366,31 @@ var elGenie = (function() {
       }
     }
 
+    // do intro animation
+    var oldScaleX = sprGenie.scale.x;
+    sprGenie.scale.x = sprGenie.scale.y = 0.01;
+    
     // add to stage
     stage.addChild(sprGenie);
+
+    function introLoop() {
+      introAnimation(introLoop);
+    }
+    introLoop();
+
+    function introAnimation(callback) {
+      if (sprGenie.scale.x < oldScaleX) {
+
+        //var s = (sprGenie.scale.x + 0.005);
+        var s = (sprGenie.scale.x + 0.01) * 1.05;
+
+        sprGenie.scale.x = sprGenie.scale.y = s;
+
+        setTimeout(callback, MSPF);
+      } else {
+        sprGenie.scale.x = sprGenie.scale.y = oldScaleX;
+      }
+    }
 
 
     /**
@@ -390,7 +411,6 @@ var elGenie = (function() {
                           new PIXI.Rectangle( i * w, j * h, w, h ) ) );
       }
     }
-
 
 
     var sparkles = [];
