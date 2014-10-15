@@ -9,9 +9,9 @@ var elGenie = (function() {
   var DEBUG = false;
   var WIDTH = 960 || window.innerWidth; // 960
   var HEIGHT = window.innerHeight;
-  var FPS = (ismobile) ? 10 : 20;
+  var FPS = (ismobile) ? 20 : 20;
   var MSPF = 1000 / FPS; // MS per Frame
-  var TPS = 20;
+  var TPS = 18;
   var MSPT = 1000 / TPS; // MS per Frame
 
   /**
