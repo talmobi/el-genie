@@ -212,11 +212,7 @@ var elGenie = (function() {
 
 
     // set mobile frindly hit area
-    if (ismobile) {
-      sprGenie.hitArea = new PIXI.Rectangle( -sprGenie.width * sprGenie.anchor.x,
-        -sprGenie.height * sprGenie.anchor.y, 
-        window.innerWidth, window.innerHeight);
-    }
+    mobileHitAreaFix();
 
     // tint the sprite in a color (hex RRGGBB)
     sprGenie.tint = 0xDDCC22;
@@ -587,11 +583,7 @@ var elGenie = (function() {
       initPolygon();
 
       // set mobile frindly hit area
-      if (ismobile) {
-        sprGenie.hitArea = new PIXI.Rectangle( -sprGenie.width * sprGenie.anchor.x,
-          -sprGenie.height * sprGenie.anchor.y, 
-          window.innerWidth, window.innerHeight);
-      }
+      mobileHitAreaFix();
 
       // draw hitbox for testing
       if (sprGenie.hitArea && DEBUG) {
@@ -607,6 +599,14 @@ var elGenie = (function() {
       for (var i = 0; i < sparkles.length; i++) {
         var p = sparkles[i];
         p.removed = true;
+      }
+    }
+
+    function mobileHitAreaFix() {
+      if (ismobile) {
+        sprGenie.hitArea = new PIXI.Rectangle( sprGenie.width * sprGenie.anchor.x,
+          sprGenie.height * sprGenie.anchor.y, 
+          window.innerWidth, window.innerHeight);
       }
     }
 
