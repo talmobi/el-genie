@@ -13,6 +13,7 @@ var elGenie = (function() {
   var MSPF = 1000 / FPS; // MS per Frame
   var TPS = (ismobile) ? 20 : 20;;
   var MSPT = 1000 / TPS; // MS per Frame
+  var running = true;
 
   /**
     * Info.js (based on stats.js)
@@ -165,7 +166,7 @@ var elGenie = (function() {
       * Setup the genie lamp
       */
     // load textures
-    var texture = PIXI.Texture.fromImage("genie_lamp.png");
+    var texture = PIXI.Texture.fromImage("images/genie_lamp.png");
     // create sprite from it
     var sprGenie = new PIXI.Sprite(texture);
 
@@ -233,7 +234,14 @@ var elGenie = (function() {
       this.wobbleFactor += sprGenie.defaultWobbleFactor;
     }
 
+    // genie lamp udpate and wobble logic
     sprGenie.tick = function() {
+      this.rotation = Math.sin(ticks / 2) * this.wobbleFactor;
+
+      if (!running) {
+        return;
+      }
+
       if (this.isRubbing) {
         if (ticks > this.rubStart + 150) {
           this.isRubbing = false;
@@ -268,8 +276,22 @@ var elGenie = (function() {
             this.wobbleFactor = 0;
         }
 
-        this.rotation = Math.sin(ticks / 2) * this.wobbleFactor;
+
+        // transition to video after wobble
+        if (this.wobbleFactor > .5) {
+          videoTransition();
+        }
       }
+    }
+
+    // transition to video
+    function videoTransition() {
+      running = false;
+
+      $('#video_id').slideDown(1000, 'swing',function() {
+        $(canvas).remove();
+      });
+
     }
 
     // setup genie touch events
@@ -464,7 +486,7 @@ var elGenie = (function() {
     stage.addChild(sparkleContainer);
 
     // load the sprite sheet
-    var sparkleSheet = PIXI.Texture.fromImage("sparkle.png");
+    var sparkleSheet = PIXI.Texture.fromImage("images/sparkle.png");
 
     // slice the sheet into subimages for the animation
     var texSparkles = [];
