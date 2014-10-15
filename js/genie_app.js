@@ -586,29 +586,28 @@ var elGenie = (function() {
 
       initPolygon();
 
+      // set mobile frindly hit area
+      if (ismobile) {
+        sprGenie.hitArea = new PIXI.Rectangle( -sprGenie.width * sprGenie.anchor.x,
+          -sprGenie.height * sprGenie.anchor.y, 
+          window.innerWidth, window.innerHeight);
+      }
+
+      // draw hitbox for testing
+      if (sprGenie.hitArea && DEBUG) {
+        var g = new PIXI.Graphics();
+        g.beginFill(0x00FF00);
+        g.drawRect(sprGenie.hitArea.x + sprGenie.width * sprGenie.anchor.x,
+                   sprGenie.hitArea.y + sprGenie.height * sprGenie.anchor.y, sprGenie.hitArea.width, sprGenie.hitArea.height);
+        g.endFill();
+        stage.addChild(g);
+      }
 
       // remove all sparkles
       for (var i = 0; i < sparkles.length; i++) {
         var p = sparkles[i];
         p.removed = true;
       }
-    }
-
-    // set mobile frindly hit area
-    if (ismobile) {
-      sprGenie.hitArea = new PIXI.Rectangle( -sprGenie.width * sprGenie.anchor.x,
-        -sprGenie.height * sprGenie.anchor.y, 
-        window.innerWidth, window.innerHeight);
-    }
-
-    // draw hitbox for testing
-    if (sprGenie.hitArea && DEBUG) {
-      var g = new PIXI.Graphics();
-      g.beginFill(0x00FF00);
-      g.drawRect(sprGenie.hitArea.x + sprGenie.width * sprGenie.anchor.x,
-                 sprGenie.hitArea.y + sprGenie.height * sprGenie.anchor.y, sprGenie.hitArea.width, sprGenie.hitArea.height);
-      g.endFill();
-      stage.addChild(g);
     }
 
     window.addEventListener("resize", resize, false);
