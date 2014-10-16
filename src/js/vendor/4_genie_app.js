@@ -3,6 +3,23 @@ var elGenie = (function() {
   /**
     * Set starry image to glow.
     */
+  var glowing = true;
+  (function() {
+    var img = $('#elStarsImageGlow');
+
+    var duration = 1000;
+
+    function loop() {
+      if (glowing) {
+        img.fadeIn(duration, function() {
+          img.fadeOut(duration, loop);
+        })
+      }
+    }
+    if (img) {
+      loop();
+    }
+  })();
   var _img = $('#elStarsImage');
   if (_img && false) {
     function loop(){
@@ -19,10 +36,11 @@ var elGenie = (function() {
   /**
     * App configuration
     */
+  var DEBUG = false;
+
   var ismobile = (WURFL) ? WURFL.is_mobile : true;
   var sparkleMode = 2;
-  var SCALE = .5;
-  var DEBUG = false;
+  var SCALE = 1;
   var WIDTH = 960 || window.innerWidth; // 960
   var HEIGHT = window.innerHeight;
   var FPS = (ismobile) ? 20 : 20;
@@ -34,8 +52,9 @@ var elGenie = (function() {
   /**
     * Info.js (based on stats.js)
     */
-  if (DEBUG) {
-    var info = new Info();
+  var info = null;
+  if (DEBUG && false) {
+    info = new Info();
     info.setMode(0); // 0: info box 1, 1: info box 2
 
     // Align top-left
@@ -191,17 +210,26 @@ var elGenie = (function() {
     sprGenie.anchor.y = .5; // 0.8
 
     // set sprGenie at center of screen
-    sprGenie.position.x = width / 2 | 0;
-    sprGenie.position.y = height / 2 | 0;
+    function positionGenieLamp() {
+      sprGenie.position.x = (width * .465) | 0;
+      //sprGenie.position.y = (height * .5) | 0;
+      sprGenie.position.y = (205 + 370 * sprGenie.anchor.y);
+    }
+    positionGenieLamp();
 
     // shrink the lamp a bit
     sprGenie.scale.x = sprGenie.scale.y = SCALE;
 
     // defines a polygon shape around the lamp (for more accurate collision detection)
-    var vertices = [0,300, 135,235, 488,290,
+    /*var vertices = [0,300, 135,235, 488,290,
                     620,60, 880,0, 1020,190,
                     1020,280, 777,515, 870,630,
                     270,625, 403,540];
+                    */
+    // high res lamp rexture
+    var vertices = [0, 100, 420, 0, 740, 50,
+                    750, 250, 510, 350, 300, 350,
+                    0, 160];
 
     var scaledVertices, polygonBox, scaledPolygon;
 
@@ -209,8 +237,8 @@ var elGenie = (function() {
       scaledVertices = utils.resizePolygon(vertices, null, SCALE);
       polygonBox = utils.rectOfPolygon(scaledVertices);
 
-      var xx = sprGenie.x - 1024 * SCALE * sprGenie.anchor.x;
-      var yy = sprGenie.y - 667 * SCALE * sprGenie.anchor.y;
+      var xx = sprGenie.x - 774 * SCALE * sprGenie.anchor.x;
+      var yy = sprGenie.y - 364 * SCALE * sprGenie.anchor.y;
       //var xx = sprGenie.x - sprGenie.width * .93;
       //var yy = sprGenie.y - sprGenie.height * .75;
       utils.movePolygon(scaledVertices, xx, yy);
@@ -220,7 +248,7 @@ var elGenie = (function() {
 
     if (DEBUG) {
       var _g = new PIXI.Graphics();
-      _g.beginFill(0x00FF00);
+      _g.beginFill(0x00FF00, 0.5);
       utils.drawPolygon(_g, scaledVertices);
       stage.addChild(_g);
     }
@@ -230,14 +258,15 @@ var elGenie = (function() {
     mobileHitAreaFix();
 
     // tint the sprite in a color (hex RRGGBB)
-    sprGenie.tint = 0xDDCC22;
+    //sprGenie.tint = 0xDDCC22;
 
     // make sprite clickable
     sprGenie.interactive = true;
     sprGenie.buttonMode = true;
 
     // define the magnitude of the wobble effect
-    sprGenie.defaultWobbleFactor = .007 * (ismobile ? 3 : 1);
+    sprGenie.defaultWobbleFactor = .007 * (ismobile ? 4 : 2);
+    sprGenie.baseWobbleFactor = .005;
     sprGenie.wobbleFactor = .005;
 
     // create rubbing function for genie
@@ -259,16 +288,14 @@ var elGenie = (function() {
       }
 
       if (this.isRubbing) {
-        if (ticks > this.rubStart + 150) {
+        if (ticks > this.rubStart + MSPT * 1) {
           this.isRubbing = false;
-          this.wobbleFactor = sprGenie.defaultWobbleFactor;
-          this.rotation = 0;
           return;
         }
 
         var vertices = scaledVertices;
-        var xoff = 200;
-        var yoff = -80;
+        //var xoff = 200;
+        //var yoff = -80;
         var sg = sprGenie;
         if (this.wobbleFactor > 0.015) {
           if (Math.random() * 10 < 1)
@@ -285,17 +312,16 @@ var elGenie = (function() {
           }
         }
 
-        if (ticks > this.rubCycle + 20) {
-          this.rubCycle = ticks;
-          this.wobbleFactor /= 2;
-          if (this.wobbleFactor < sprGenie.defaultWobbleFactor)
-            this.wobbleFactor = 0;
-        }
-
-
         // transition to video after wobble
         if (this.wobbleFactor > .3) {
           videoTransition();
+        }
+
+      } else { // not rubbing
+        if (this.wobbleFactor < this.baseWobbleFactor) {
+          this.wobbleFactor = this.baseWobbleFactor;
+        } else {
+          this.wobbleFactor *= 0.95;
         }
       }
     }
@@ -316,15 +342,22 @@ var elGenie = (function() {
       });*/
 
       var t = 3000;
-      $('#video_id').fadeIn(t, function() {
+      var v = $('#video_id');
+      v.fadeIn(t, function() {
         $(canvas).remove();
+
+        //glowing = false;
+
+        videojs("video_id").ready(function() {
+          this.play();
+        });
       })
 
       function _fadeOutGenie() {
         if (sprGenie) {
           if (sprGenie.alpha < .1)
             return;
-          sprGenie.alpha *= .99;
+          sprGenie.alpha *= .98;
           setTimeout(MSPF,_fadeOutGenie);
         }
       }
@@ -451,7 +484,7 @@ var elGenie = (function() {
           if (s > oldScaleX) {
             s = oldScaleX;
             sprGenie.rub();
-            sprGenie.rub();
+            if (!ismobile) sprGenie.rub();
             
             setTimeout(function() {
               spawnLampParticle();
@@ -467,6 +500,7 @@ var elGenie = (function() {
       }
     }
 
+    var animatingIntro = true;
     function dropIntro() {
       var oldY = sprGenie.y;
       sprGenie.y = -sprGenie.height;
@@ -486,34 +520,34 @@ var elGenie = (function() {
       introLoop();
 
       function introAnimation(callback) {
-        if (sprGenie.y < oldY) {
+        yspd += grav;
+        var s = sprGenie.y + yspd;
 
-          yspd += grav;
-          s = sprGenie.y + yspd;
-
-          if (s > oldY) {
-            s = oldY - (s - oldY);
-            sprGenie.rub();
-            
+        if (s > oldY) { // bounce from ground
+          s = oldY - (s - oldY);
+          sprGenie.wobbleFactor = .2 * (yspd / 80);
+          
+          spawnParticle();
+          spawnParticle();
+          setTimeout(function() {
             spawnParticle();
-            setTimeout(function() {
-              spawnParticle();
-              spawnLampParticle();
-            }, 0);
+            spawnLampParticle();
+          }, 0);
 
-            yspd = -yspd / 2;
-            bounceCount++;
-          }
+          yspd = -yspd / 2;
+          bounceCount++;
+        }
 
-          sprGenie.y = s;
+        sprGenie.y = s;
 
-          if (bounceCount < bounceMax) {
-            setTimeout(callback, MSPF);
-          }
+        if (bounceCount < bounceMax) {
+          setTimeout(callback, MSPF);
         } else {
           sprGenie.y = oldY;
+          animatingIntro = false;
         }
       }
+
     }
     dropIntro();
 
@@ -560,8 +594,8 @@ var elGenie = (function() {
     // spawn particle relative to the wobbling genie lamp
     function spawnLampParticle(x, y) {
       if (!x || !y) {
-        x = sprGenie.x;
-        y = sprGenie.y;
+        x = sprGenie.position.x;
+        y = sprGenie.position.y;
       }
 
       var d = utils.distance(sprGenie, {x: x, y: y}) // distance
@@ -712,7 +746,7 @@ var elGenie = (function() {
     function animate(callback) {
       // DEBUG display genie lamps rotation radians
       //info.setInfo1("Sparkle Mode: " + sparkleMode + " / 2\n MouseTrail: "  + ((mouseTrailToggle) ? "ON (space)" : "OFF (space)") );
-      if (DEBUG) {
+      if (DEBUG && info) {
         info.setInfo1( "w: " + renderer.view.width + ", h: " + renderer.view.height + "\n | " +
                       "iw: " + window.innerWidth + ", ih: " + window.innerHeight + "\n | " +
                       ((mouseTrailToggle) ? "ON (space)" : "OFF (space)") );
@@ -737,8 +771,9 @@ var elGenie = (function() {
       renderer.resize(width, height);
 
       // set sprGenie at center of screen
-      sprGenie.position.x = (width / 2) | 0;
-      sprGenie.position.y = (height / 2) | 0;
+      if (!animatingIntro) {
+        positionGenieLamp();
+      }
 
       initPolygon();
 

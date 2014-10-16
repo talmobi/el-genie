@@ -1,17 +1,16 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #222;
+  background-color: #2F0221;
+  max-width: 960px;
+  overflow: hidden;
 }
 
 /* works in IE */
 #bg {
   z-index: -1;
-  position: fixed;
-  top: 0;
-  left: 0;
-  min-width: 100%;
-  min-height: 100%;
+  position: absolute;
+  max-width: 960px;
 }
 
 #elGenieText img {
@@ -19,22 +18,47 @@ body {
   margin-left: auto;
   margin-right: auto;
   padding-top: 10px;
-  top: 0;
+}
+
+#wishes_img_id {
+  margin-top: -72;
+  margin-bottom: -60;
 }
 
 #video_id {
   display: none;
+  position: absolute;
+
+  max-width: 780px;
+  max-height: 440px;
+
+/*
+  top: 50%;
+  left: 50%;
+
+  width: 780px;
+  height: 440px;
+
+  margin-top: -390px;
+  margin-left: -220px;
+*/ 
+
   position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
+  top: 145;
+  left: 90;
+
 }
 
 #elStarsImage {
-  position: fixed;
-  display: block;
-  margin-top: 0;
-  padding-top: 0;
+  position: absolute;
+  max-width: 960px;
+}
+
+#elStarsImageGlow {
+  position: absolute;
+  max-width: 960px;
+}
+
+#genieContainer {
   width: 100%;
 }

@@ -36,7 +36,7 @@ var elGenie = (function() {
   /**
     * App configuration
     */
-  var DEBUG = true;
+  var DEBUG = false;
 
   var ismobile = (WURFL) ? WURFL.is_mobile : true;
   var sparkleMode = 2;
@@ -484,7 +484,7 @@ var elGenie = (function() {
           if (s > oldScaleX) {
             s = oldScaleX;
             sprGenie.rub();
-            sprGenie.rub();
+            if (!ismobile) sprGenie.rub();
             
             setTimeout(function() {
               spawnLampParticle();
@@ -500,6 +500,7 @@ var elGenie = (function() {
       }
     }
 
+    var animatingIntro = true;
     function dropIntro() {
       var oldY = sprGenie.y;
       sprGenie.y = -sprGenie.height;
@@ -519,35 +520,34 @@ var elGenie = (function() {
       introLoop();
 
       function introAnimation(callback) {
-        if (sprGenie.y < oldY) {
+        yspd += grav;
+        var s = sprGenie.y + yspd;
 
-          yspd += grav;
-          s = sprGenie.y + yspd;
-
-          if (s > oldY) {
-            s = oldY - (s - oldY);
-            sprGenie.wobbleFactor = .2 * (yspd / 80);
-            
+        if (s > oldY) { // bounce from ground
+          s = oldY - (s - oldY);
+          sprGenie.wobbleFactor = .2 * (yspd / 80);
+          
+          spawnParticle();
+          spawnParticle();
+          setTimeout(function() {
             spawnParticle();
-            spawnParticle();
-            setTimeout(function() {
-              spawnParticle();
-              spawnLampParticle();
-            }, 0);
+            spawnLampParticle();
+          }, 0);
 
-            yspd = -yspd / 2;
-            bounceCount++;
-          }
+          yspd = -yspd / 2;
+          bounceCount++;
+        }
 
-          sprGenie.y = s;
+        sprGenie.y = s;
 
-          if (bounceCount < bounceMax) {
-            setTimeout(callback, MSPF);
-          }
+        if (bounceCount < bounceMax) {
+          setTimeout(callback, MSPF);
         } else {
           sprGenie.y = oldY;
+          animatingIntro = false;
         }
       }
+
     }
     dropIntro();
 
@@ -771,7 +771,9 @@ var elGenie = (function() {
       renderer.resize(width, height);
 
       // set sprGenie at center of screen
-      positionGenieLamp();
+      if (!animatingIntro) {
+        positionGenieLamp();
+      }
 
       initPolygon();
 
