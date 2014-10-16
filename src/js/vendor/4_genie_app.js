@@ -1,6 +1,22 @@
 var elGenie = (function() {
 
   /**
+    * Set starry image to glow.
+    */
+  var _img = $('#elStarsImage');
+  if (_img && false) {
+    function loop(){
+      if(playing){
+        $('.images img:eq(1)').fadeIn(700, function(){
+          $(this).fadeOut(700,loop);
+        });
+      }
+    }
+
+    loop(); // start loop
+  }
+
+  /**
     * App configuration
     */
   var ismobile = (WURFL) ? WURFL.is_mobile : true;
@@ -288,16 +304,31 @@ var elGenie = (function() {
     function videoTransition() {
       running = false;
 
-      $('#video_id').css({top: '-' + window.innerHeight, display: 'block' });
-      $('#video_id').animate({
+      //$('#video_id').css({top: '-' + window.innerHeight, display: 'block' });
+      
+      /*$('#video_id').animate({
         top: "+" + 0
       }, {
         duration: 6000,
         complete: function() {
           $(canvas).remove();
         }
+      });*/
 
-      });
+      var t = 3000;
+      $('#video_id').fadeIn(t, function() {
+        $(canvas).remove();
+      })
+
+      function _fadeOutGenie() {
+        if (sprGenie) {
+          if (sprGenie.alpha < .1)
+            return;
+          sprGenie.alpha *= .99;
+          setTimeout(MSPF,_fadeOutGenie);
+        }
+      }
+      _fadeOutGenie();
 
     }
 
