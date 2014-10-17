@@ -1,13 +1,21 @@
-<html>
+<!doctype html>
+<!--[if lt IE 7 ]> <html class="ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class=""> <!--<![endif]-->
 <head>
   <title>Genie Bottle</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-   <!-- inject:css -->
-  <link rel="stylesheet" href="css/style.css">
-  <!-- endinject -->
 
   <!-- <link rel="stylesheet" type="text/css" href="css/video-js.css"> -->
-  <link href="http://vjs.zencdn.net/4.1.0/video-js.css" rel="stylesheet">
+  <link href="http://vjs.zencdn.net/4.6/video-js.css" rel="stylesheet">
+   <!-- inject:css -->
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- endinject -->
 </head>
 <body onload='elGenie.init("elGenieCanvas");'>
 
@@ -26,15 +34,10 @@
       <img src="images/base_whirly.png">
     </div>
 
-    <video id="video_id" 
-      class="video-js vjs-default-skin" 
-      controls
-      preload="auto" 
-      width="100%"
-      height="100%"
-      poster="https://i1.ytimg.com/vi/1CH76F1mFis/mqdefault.jpg" 
-      data-setup='{"techOrder":["youtube"], "src":"http://www.youtube.com/embed/1CH76F1mFis"}'>
-    </video>
+    <div id="video_container">
+      <video id="video_id" src="" width="780px" height="440px" class="video-js vjs-default-skin" controls preload="auto" data-setup='{ "techOrder": ["youtube"], "src": "http://www.youtube.com/embed/1CH76F1mFis" }'></video>
+    </div>
+    <!-- http://youtu.be/oIG9osPPILM -->
   </div>
 
   <!-- scripts -->

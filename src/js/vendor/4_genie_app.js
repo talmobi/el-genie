@@ -34,6 +34,32 @@ var elGenie = (function() {
   }
 
   /**
+    * <IE 8 FALLBACK - Display only video.
+    */
+  var oldIE;
+  if ($('html').is('.ie6, .ie7, .ie8')) {
+    oldIE = true;
+    console.log("OLD INTERNET EXPLORER");
+  }
+
+  if (oldIE) {
+    // play video only, don't display genie lamp effect
+
+    (function() {
+      function videoTransition() {
+        var t = 3000;
+        var vc = $('#video_container');
+        var v = $('#video_id');
+        vc.fadeIn(t, function() {
+          $(canvas).remove();
+
+          v[0].player.play();
+        });
+      }
+    })();
+  }
+
+  /**
     * App configuration
     */
   var DEBUG = false;
@@ -326,6 +352,11 @@ var elGenie = (function() {
       }
     }
 
+    /**
+      * Prepare video
+      */
+      // ensure the web page (DOM) has loaded
+
     // transition to video
     function videoTransition() {
       running = false;
@@ -342,28 +373,37 @@ var elGenie = (function() {
       });*/
 
       var t = 3000;
+      var vc = $('#video_container');
       var v = $('#video_id');
-      v.fadeIn(t, function() {
+      vc.fadeIn(t, function() {
         $(canvas).remove();
 
-        //glowing = false;
+        v[0].player.play();
+      });
 
-        videojs("video_id").ready(function() {
-          this.play();
-        });
-      })
 
-      function _fadeOutGenie() {
-        if (sprGenie) {
-          if (sprGenie.alpha < .1)
-            return;
-          sprGenie.alpha *= .98;
-          setTimeout(MSPF,_fadeOutGenie);
+      function _genieFadeOut() {
+        // loop
+        function loop() {
+          animation(loop);
         }
-      }
-      _fadeOutGenie();
+        loop();
 
+        function animation(callback) {
+          if (sprGenie) {
+            if (sprGenie.alpha > .01) {
+              sprGenie.alpha = (sprGenie.alpha * 0.975);
+              setTimeout(callback, MSPF);
+            } else {
+              sprGenie.alpha = 0;
+            }
+          }
+        }
+
+      }
+      _genieFadeOut();
     }
+    //videoTransition(); // DEBUG REMOVE THIS LINE
 
     // setup genie touch events
     var _s = sprGenie;
@@ -818,7 +858,9 @@ var elGenie = (function() {
     */
   return {
     init: function(canvasId) {
-      init(canvasId);
+      if (!oldIE) {
+        init(canvasId);
+      }
     }
   }
 })();

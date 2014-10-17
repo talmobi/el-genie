@@ -12,7 +12,8 @@
     "gulp-imagemin": "^1.0.1",
     "gulp-inject": "^1.0.2",
     "gulp-notify": "^2.0.0",
-    "gulp-uglify": "^1.0.1"
+    "gulp-uglify": "^1.0.1",
+    "serve": "^1.4.0"
   },
   "scripts": {
     "test": "test"
